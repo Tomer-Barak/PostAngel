@@ -1,0 +1,19 @@
+// Project settings with modern DSL for Gradle 9.0
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        google()
+        mavenCentral()
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+rootProject.name = "PostMuse"
+include ':app'
+
+// Version catalogs is now a stable feature in Gradle 7.4+, no need to enable it explicitly

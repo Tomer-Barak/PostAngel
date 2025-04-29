@@ -1,0 +1,11 @@
+// Top-level build file
+plugins {
+    alias(libs.plugins.android.application) apply false
+    alias(libs.plugins.android.library) apply false
+    alias(libs.plugins.kotlin.android) apply false
+}
+
+// Using Delete type for Gradle 9.0 compatibility
+tasks.register('clean', Delete) {
+    delete = [rootProject.buildDir]
+}

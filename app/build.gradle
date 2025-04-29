@@ -1,0 +1,63 @@
+plugins {
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+}
+
+android {
+    namespace 'com.postmuse.screenshare'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.postmuse.screenshare"        
+        minSdk 26
+        targetSdk 34
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+    
+    signingConfigs {
+        release {
+            // You'll need to create a keystore file and update these values
+            // Run: keytool -genkey -v -keystore postmuse.keystore -alias postmuse -keyalg RSA -keysize 2048 -validity 10000
+            // storeFile file('path/to/your/keystore/postmuse.keystore')
+            // storePassword "your-store-password"
+            // keyAlias "postmuse"
+            // keyPassword "your-key-password"
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
+    }
+    
+    compileOptions {
+        // Updated to Java 17 for better compatibility with Gradle 9.0
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+}
+
+dependencies {
+    implementation(libs.androidx.core)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.material)
+    implementation(libs.androidx.constraintlayout)
+    implementation(libs.okhttp)
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.test.ext)
+    androidTestImplementation(libs.androidx.test.espresso)
+    implementation(libs.androidx.lifecycle.runtime)
+    
+    // Add security library for encrypted storage
+    implementation("androidx.security:security-crypto:1.1.0-alpha06")
+}

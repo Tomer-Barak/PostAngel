@@ -1,0 +1,40 @@
+[versions]
+# Plugin versions
+agp = "8.2.2"
+kotlin = "1.9.10"
+
+# Library versions
+androidx-core = "1.9.0"
+androidx-appcompat = "1.6.0"
+androidx-lifecycle = "2.7.0"
+material = "1.8.0"
+constraintlayout = "2.1.4"
+okhttp = "4.10.0"
+
+# Test library versions
+junit = "4.13.2"
+androidx-test-ext = "1.1.5"
+androidx-test-espresso = "3.5.1"
+
+[libraries]
+# AndroidX libraries
+androidx-core = { group = "androidx.core", name = "core-ktx", version.ref = "androidx-core" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidx-appcompat" }
+androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+androidx-lifecycle-runtime = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "androidx-lifecycle" }
+
+# UI libraries
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+
+# Networking libraries
+okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
+
+# Test libraries
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+androidx-test-ext = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-ext" }
+androidx-test-espresso = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "androidx-test-espresso" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+android-library = { id = "com.android.library", version.ref = "agp" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
