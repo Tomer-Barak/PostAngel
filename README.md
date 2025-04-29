@@ -1,5 +1,7 @@
 # PostMuse App
 
+![PostMuse Logo](icon.png)
+
 An Android application that helps users create and respond to social media posts using AI and a personal knowledge base.
 
 ## Features

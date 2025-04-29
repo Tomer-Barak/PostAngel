@@ -30,7 +30,6 @@ class KnowledgeBaseActivity : AppCompatActivity() {    companion object {
         private const val TAG = "KnowledgeBaseActivity"
         const val TOPICS_DIR_NAME = "Topics" // Same constant used across the app
         private const val PERMISSION_REQUEST_READ_EXTERNAL_STORAGE = 101
-        private const val PERMISSION_REQUEST_READ_MEDIA = 102
     }
     
     private lateinit var recyclerView: RecyclerView
@@ -274,19 +273,12 @@ class KnowledgeBaseActivity : AppCompatActivity() {    companion object {
             Toast.makeText(this, "Error deleting topic: ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }    private fun importFilesFromStorage() {
+        // For Android 13+ (Tiramisu), we don't need specific permission when using the Storage Access Framework
+        // It's designed to handle user-selected files without needing permissions
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            // READ_MEDIA_DOCUMENTS doesn't exist, use the correct permission for Android 13+
-            val permission = android.Manifest.permission.READ_MEDIA_IMAGES
-            if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(
-                    this,
-                    arrayOf(permission),
-                    PERMISSION_REQUEST_READ_MEDIA
-                )
-            } else {
-                openFilePicker()
-            }
+            openFilePicker()
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            // For Android 6.0 - 12, we need READ_EXTERNAL_STORAGE
             val permission = android.Manifest.permission.READ_EXTERNAL_STORAGE
             if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(
@@ -298,51 +290,64 @@ class KnowledgeBaseActivity : AppCompatActivity() {    companion object {
                 openFilePicker()
             }
         } else {
+            // For Android 5.1 and below, no runtime permissions needed
             openFilePicker()
         }
     }    private fun openFilePicker() {
-        // Show a dialog to choose between content provider or local storage
+        // Create a string array of MIME types that can be selected
+        val mimeTypes = arrayOf(
+            "text/*",  // All text files
+            "application/octet-stream", // General files
+            "*/*"      // All files (as fallback)
+        )
+        
+        // Show a dialog to choose between different file types
         AlertDialog.Builder(this)
-            .setTitle("Select File Source")
-            .setItems(arrayOf("Document Provider", "Local Storage")) { _, which ->
+            .setTitle("Select File Type")
+            .setItems(arrayOf("Text Files (.txt, .md, etc.)", "All Files")) { _, which ->
                 when (which) {
                     0 -> {
-                        // Use the standard document provider (Content URI)
+                        // For text files only
                         filePickerLauncher.launch("text/*")
                     }
                     1 -> {
-                        // Launch a custom file picker that can access direct file paths
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                            // For Android 11+, we need to use the Storage Access Framework
-                            Toast.makeText(this, "For Android 11+, please select files through the document provider", Toast.LENGTH_LONG).show()
-                            filePickerLauncher.launch("text/*")
-                        } else {
-                            // For older Android versions, we could use a custom file picker
-                            // or just fallback to the standard one
-                            filePickerLauncher.launch("text/*")
-                        }
+                        // For all files - we'll filter for supported types later
+                        filePickerLauncher.launch("*/*")
                     }
                 }
             }
             .show()
     }
-    
-    private fun handleSelectedFile(uri: Uri) {
+      private fun handleSelectedFile(uri: Uri) {
         try {
             val fileDetails = getFileDetailsFromUri(uri)
             val fileName = fileDetails.first
-              // Check if file has a supported extension
+            val mimeType = fileDetails.second
+            
+            Log.d(TAG, "Selected file: $fileName, MIME type: $mimeType")
+            
+            // Check if file has a supported extension
             if (!fileName.endsWith(".txt", ignoreCase = true) && !fileName.endsWith(".md", ignoreCase = true)) {
-                // Check if it's a text file by MIME type and ask user what extension to use
-                val mimeType = fileDetails.second
-                if (mimeType == "text/plain" || mimeType == "text/markdown") {
+                // Check the MIME type for text content
+                val isTextFile = mimeType?.startsWith("text/") == true
+                val isPlainTextFile = mimeType == "text/plain" || mimeType == "text/markdown"
+                
+                if (isTextFile || isPlainTextFile || checkIfFileIsText(uri)) {
+                    // It's likely a text file, ask which extension to use
                     showFileExtensionDialog(uri, fileName)
                 } else {
-                    Toast.makeText(this, "Only .txt and .md files are supported", Toast.LENGTH_SHORT).show()
-                    return
+                    // Explain the limitation and provide guidance
+                    AlertDialog.Builder(this)
+                        .setTitle("Unsupported File Type")
+                        .setMessage("Only text files (.txt) and markdown files (.md) are supported in the Knowledge Base. Would you like to try importing this file as text?")
+                        .setPositiveButton("Try as Text") { _, _ -> 
+                            showFileExtensionDialog(uri, fileName) 
+                        }
+                        .setNegativeButton("Cancel", null)
+                        .show()
                 }
             } else {
-                  // Check if file with same name already exists
+                // Check if file with same name already exists
                 val destinationFile = File(topicsDir, fileName)
                 if (destinationFile.exists()) {
                     showFileExistsDialog(uri, fileName, destinationFile)
@@ -353,6 +358,38 @@ class KnowledgeBaseActivity : AppCompatActivity() {    companion object {
         } catch (e: Exception) {
             Log.e(TAG, "Error handling selected file", e)
             Toast.makeText(this, "Error processing file: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
+    }
+    
+    // Helper function to check if a file seems to be text by examining its contents
+    private fun checkIfFileIsText(uri: Uri): Boolean {
+        try {
+            val inputStream = contentResolver.openInputStream(uri) ?: return false
+            val buffer = ByteArray(1024) // Read first 1KB to determine file type
+            val bytesRead = inputStream.read(buffer)
+            inputStream.close()
+            
+            if (bytesRead <= 0) return false
+            
+            // Check if content looks like text (avoids obvious binary files)
+            var textCount = 0
+            var binaryCount = 0
+            
+            for (i in 0 until bytesRead) {
+                val b = buffer[i].toInt() and 0xFF
+                if (b <= 0x08 || (b >= 0x0E && b <= 0x1F) || b >= 0x7F) {
+                    // Control characters or extended ASCII are likely binary
+                    binaryCount++
+                } else {
+                    textCount++
+                }
+            }
+            
+            // If more than 10% looks binary, it's probably not a text file
+            return (binaryCount.toFloat() / (textCount + binaryCount)) <= 0.1f
+        } catch (e: Exception) {
+            Log.e(TAG, "Error checking if file is text", e)
+            return false
         }
     }
     
@@ -440,8 +477,7 @@ class KnowledgeBaseActivity : AppCompatActivity() {    companion object {
             Log.e(TAG, "Error copying file to topics directory", e)
             Toast.makeText(this, "Error importing file: ${e.message}", Toast.LENGTH_SHORT).show()
         }
-    }
-      override fun onRequestPermissionsResult(
+    }      override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
         grantResults: IntArray
@@ -454,13 +490,13 @@ class KnowledgeBaseActivity : AppCompatActivity() {    companion object {
                     openFilePicker()
                 } else {
                     Toast.makeText(this, "Permission denied to read external storage", Toast.LENGTH_SHORT).show()
-                }
-            }
-            PERMISSION_REQUEST_READ_MEDIA -> {
-                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    openFilePicker()
-                } else {
-                    Toast.makeText(this, "Permission denied to access media files", Toast.LENGTH_SHORT).show()
+                    // Even without permission, we can still use the Storage Access Framework
+                    AlertDialog.Builder(this)
+                        .setTitle("Permission Denied")
+                        .setMessage("You can still import files by selecting them directly through the system file picker.")
+                        .setPositiveButton("Use File Picker") { _, _ -> openFilePicker() }
+                        .setNegativeButton("Cancel", null)
+                        .show()
                 }
             }
         }

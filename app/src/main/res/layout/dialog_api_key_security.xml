@@ -26,13 +26,12 @@
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1">
-
-            <TextView
+            android:layout_weight="1">            <TextView
                 android:id="@+id/securityExplanationText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="16sp"
+                android:textSize="15sp"
+                android:lineSpacingMultiplier="1.2"
                 android:textColor="@color/black"
                 android:text="@string/api_key_security_explanation" />
 

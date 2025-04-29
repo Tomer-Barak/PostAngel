@@ -25,29 +25,26 @@
     <string name="add_topic">Add Topic</string>
     <string name="edit_topic">Edit Topic</string>
     <string name="delete_topic">Delete Topic</string>    <string name="save_topic">Save Topic</string>
-    <string name="topic_saved">Topic saved successfully</string>    <string name="enter_topic_content">Enter topic content here…</string>
-    
-    <!-- API Key Security -->
-    <string name="api_key_security_title">API Key Security Information</string>
+    <string name="topic_saved">Topic saved successfully</string>    <string name="enter_topic_content">Enter topic content here…</string>      <!-- API Key Security -->    <string name="api_key_security_title">API Key Security Information</string>
     <string name="api_key_security_explanation"><![CDATA[
-        <h3>Your API Key is stored securely</h3>
-        <p>Your OpenAI API key is encrypted and stored securely on your device using Android\'s EncryptedSharedPreferences. This encryption uses the Android KeyStore system for maximum security.</p>
+        <p><b>Your API Key is stored securely</b><br>
+        Your OpenAI API key is encrypted and stored securely on your device using Android\'s EncryptedSharedPreferences. This encryption uses the Android KeyStore system for maximum security.</p>
         
-        <h3>Client-side only architecture</h3>
-        <p>All API requests are made <b>directly from your device to OpenAI</b>. Your API key is never sent to our servers or stored elsewhere.</p>
+        <p><b>Client-side only architecture</b><br>
+        All API requests are made <b>directly from your device to OpenAI</b>. Your API key is never sent to our servers or stored elsewhere.</p>
         
-        <h3>Complete transparency</h3>
-        <p>You can view exactly how your API key is handled in our <a href="https://github.com/Tomer-Barak/PostMuse">open-source code</a> (if applicable). The app code shows that API requests go directly to OpenAI\'s servers with your key.</p>
+        <p><b>Complete transparency</b><br>
+        You can view exactly how your API key is handled in our <a href="https://github.com/Tomer-Barak/PostMuse">open-source code</a>. The app code shows that API requests go directly to OpenAI\'s servers with your key.</p>
         
-        <h3>API key usage</h3>
-        <p>Your key is only used for:</p>
+        <p><b>API key usage</b><br>
+        Your key is only used for:</p>
         <ul>
             <li>Text generation with OpenAI\'s API</li>
             <li>Image analysis with Vision API</li>
         </ul>
         
-        <h3>Your data stays private</h3>
-        <p>Since we don\'t route your API requests through our servers, we never see your data or API key.</p>
+        <p><b>Your data stays private</b><br>
+        Since we don\'t route your API requests through our servers, we never see your data or API key.</p>
     ]]></string>
     
     <string name="api_key_security_info">API key security info</string>

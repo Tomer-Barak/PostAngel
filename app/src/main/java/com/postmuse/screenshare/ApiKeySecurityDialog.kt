@@ -23,10 +23,13 @@ class ApiKeySecurityDialog(context: Context) : Dialog(context) {
         requestWindowFeature(Window.FEATURE_NO_TITLE)
         window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         
-        setContentView(R.layout.dialog_api_key_security)
-        
-        // Make links clickable
-        findViewById<TextView>(R.id.securityExplanationText).movementMethod = LinkMovementMethod.getInstance()
+        setContentView(R.layout.dialog_api_key_security)          // Make links clickable and set HTML formatting
+        val explanationText = findViewById<TextView>(R.id.securityExplanationText)
+        explanationText.text = HtmlCompat.fromHtml(
+            context.getString(R.string.api_key_security_explanation), 
+            HtmlCompat.FROM_HTML_MODE_COMPACT
+        )
+        explanationText.movementMethod = LinkMovementMethod.getInstance()
         
         // Set close button click listener
         findViewById<Button>(R.id.closeButton).setOnClickListener {

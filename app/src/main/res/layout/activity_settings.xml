@@ -38,48 +38,16 @@
         app:layout_constraintTop_toBottomOf="@id/serverUrlLabelTextView"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginTop="8dp"/>
-          <TextView
-        android:id="@+id/apiKeyLabelTextView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/openai_api_key"
-        android:textSize="16sp"
-        app:layout_constraintTop_toBottomOf="@id/serverUrlEditText"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginTop="16dp"/>    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@id/apiKeyLabelTextView"
-        android:layout_marginTop="8dp">
-
-        <EditText
-            android:id="@+id/apiKeyEditText"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:hint="@string/enter_openai_api_key"
-            android:inputType="textVisiblePassword" />
-
-        <ImageButton
-            android:id="@+id/apiSecurityInfoButton"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginStart="8dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/api_key_security_info"        android:src="@android:drawable/ic_dialog_info" />
-    </LinearLayout>
-    
+      <!-- Removed old API key input and replaced with the secure card -->
     <include
         android:id="@+id/apiKeySecurityCard"
         layout="@layout/secure_api_key_card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/apiKeyLabelTextView"
+        app:layout_constraintTop_toBottomOf="@id/serverUrlEditText"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginTop="64dp"/>
-        
-      <Button
+        android:layout_marginTop="16dp"/>
+          <Button
         android:id="@+id/saveButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
