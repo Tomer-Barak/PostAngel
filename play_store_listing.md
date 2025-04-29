@@ -8,29 +8,40 @@
 Create social media posts and responses based on your personal knowledge base.
 
 ## Long Description
-PostMuse makes it effortless to analyze any image using advanced AI. With just a couple of taps, you can process any image from your Android device and get detailed AI-powered descriptions and insights.
+PostMuse is your AI-powered social media assistant that helps you create engaging posts and craft contextual responses based on your personal knowledge base. Whether you're looking to create original content or respond to existing posts while promoting your preferred topics, PostMuse makes it effortless with advanced AI.
 
 **Key Features:**
-• Simple and intuitive interface
-• Direct sharing from any app's share menu
+• Create AI-generated social media posts based on your personal topics
+• Get suggested responses to social media posts that align with your knowledge base
+• Direct sharing from any app's share menu for analyzing social media posts
+• Intelligent topic promotion that seamlessly incorporates your interests
 • AI-powered image analysis using OpenAI's Vision API
 • Customizable with your own OpenAI API key
 • Fast processing even with large images
-• Minimal permissions required
+• Maintain a personal knowledge base of topics you want to promote
+• Open source and privacy-focused
 
-This app is designed to help you understand and analyze images using AI. Once you've completed the simple one-time setup with your OpenAI API key, sharing becomes as easy as:
-1. Take a screenshot or select any image
+This app offers two powerful workflows:
+
+**Social Media Response Suggestions:**
+1. Take a screenshot of any social media post
 2. Tap the share button
 3. Select "Analyze with PostMuse"
+4. Get an AI-generated response that naturally incorporates your preferred topics when relevant
 
-Perfect for analyzing images, quick visual information extraction, or getting AI-powered descriptions of any visual content on your device.
+**Original Content Creation:**
+1. Open PostMuse directly
+2. Select topics from your knowledge base
+3. Get an AI-generated post ready to share
 
-Enter your OpenAI API key in the settings to enable the AI image analysis functionality.
+Perfect for content creators, social media managers, thought leaders, and anyone looking to maintain a consistent voice while promoting their interests across social platforms.
 
-Note: This app requires an OpenAI account and API key to process images.
+Enter your OpenAI API key in the settings to enable the AI functionality.
+
+Note: This app requires an OpenAI account and API key to process content.
 
 ## App Category
-- Primary: Tools
+- Primary: Social
 - Secondary: Productivity
 
 ## Content Rating Information
@@ -49,7 +60,7 @@ Note: This app requires an OpenAI account and API key to process images.
 - Link to hosted privacy policy: https://www.example.com/privacy-policy (replace with your actual privacy policy URL)
 
 ## Keywords
-screenshot, share, bot, telegram bot, image sharing, screen capture, remote sharing, team collaboration
+social media assistant, content creation, AI posts, knowledge base, social media responses, post generator, personal branding, topic promotion, content strategy, social media management
 
 ## Graphic Assets Checklist
 - [ ] App Icon (512x512px)
@@ -60,8 +71,10 @@ screenshot, share, bot, telegram bot, image sharing, screen capture, remote shar
 - [ ] App Preview Video (optional)
 
 ## Release Notes for First Version
-Initial release of BarakBot Screen Share:
-- Share screenshots directly to your BarakBot server
-- Configure custom server URL
-- Set sender name and chat ID
+Initial release of PostMuse:
+- Create AI-generated social media posts based on your personal knowledge base
+- Get suggested responses for social media posts via screenshot sharing
+- Intelligently incorporate your preferred topics into responses when relevant
+- Customizable with your own OpenAI API key
+- Open source and privacy-focused design
 - Simple and intuitive interface

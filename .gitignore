@@ -35,3 +35,6 @@ out/
 
 # Log Files
 *.log
+
+# Python scripts
+python_scripts/

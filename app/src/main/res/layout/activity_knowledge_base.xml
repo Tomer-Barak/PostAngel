@@ -31,14 +31,21 @@
             android:gravity="center"
             android:text="@string/no_topics_found"
             android:textSize="18sp"
-            android:textStyle="bold" />
-
+            android:textStyle="bold" />        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"            
+            android:layout_marginTop="8dp"
+            android:text="Add topics to help generate relevant responses to social media posts. Each topic will be used to identify opportunities for engagement."
+            android:textSize="14sp" />
+            
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"            android:layout_marginTop="8dp"
-            android:text="Add topics to help generate relevant responses to social media posts. Each topic will be used to identify opportunities for engagement."
-            android:textSize="14sp" />
+            android:gravity="center"            
+            android:layout_marginTop="8dp"
+            android:text="Supports both .txt and .md (Markdown) files."
+            android:textSize="12sp" />
 
     </LinearLayout>
 

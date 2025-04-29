@@ -43,12 +43,17 @@ class TopicEditorActivity : AppCompatActivity() {
         
         // Set up action bar
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        
-        // Display topic name without .txt extension
-        val displayName = if (topicFileName.endsWith(".txt", ignoreCase = true)) {
-            topicFileName.substring(0, topicFileName.length - 4)
-        } else {
-            topicFileName
+          // Display topic name without extension (.txt or .md)
+        val displayName = when {
+            topicFileName.endsWith(".txt", ignoreCase = true) -> {
+                topicFileName.substring(0, topicFileName.length - 4)
+            }
+            topicFileName.endsWith(".md", ignoreCase = true) -> {
+                topicFileName.substring(0, topicFileName.length - 3)
+            }
+            else -> {
+                topicFileName
+            }
         }
         supportActionBar?.title = displayName
         

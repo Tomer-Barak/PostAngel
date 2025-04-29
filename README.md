@@ -174,8 +174,34 @@ For Post Creation:
   "max_tokens": 350
 }
 ```
+
+## Advanced Features: Python Integration
+
+PostMuse includes optional Python scripts that can extend its functionality for power users:
+
+### Twitter Integration
+The `python_scripts` directory contains utilities to:
+- Monitor Twitter/X for relevant conversations about your topics
+- Automatically identify opportunities to promote your knowledge base topics
+- Generate responses using the same AI models as the Android app
+- Manage usage limits and track engagement
+
+To use these scripts:
+1. Create a `postmuse.env` file in the project root with your Twitter API credentials
+2. Configure your topics in the knowledge base
+3. Run the Twitter agent to monitor and respond to relevant conversations
+
+```bash
+# Example of running the Twitter agent
+cd python_scripts
+python -m twitter_agent
 ```
+
+### Technical Integration Notes
+- The Android app and Python scripts share the same knowledge base format
+- You can export your knowledge base from the app to use with the Python scripts
+- The same OpenAI models are used in both the app and Python scripts for consistency
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

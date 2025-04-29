@@ -185,11 +185,10 @@ class ShareReceiverActivity : AppCompatActivity() {
             withContext(Dispatchers.Main) {
                 statusTextView.text = "Evaluating for potential response opportunities..." // Update status
             }
-            
-            val knowledgeBase = readKnowledgeBase()
+              val knowledgeBase = readKnowledgeBase()
             if (knowledgeBase.isBlank()) {
                 withContext(Dispatchers.Main) {
-                    statusTextView.text = "No topics found in your knowledge base. Please add topic files to the \"${TOPICS_DIR_NAME}\" folder."
+                    statusTextView.text = "No topics found in your knowledge base. Please add topic files (.txt or .md) to the \"${TOPICS_DIR_NAME}\" folder."
                     progressBar.visibility = View.GONE
                     copyButton.visibility = View.GONE
                 }
@@ -303,18 +302,27 @@ class ShareReceiverActivity : AppCompatActivity() {
         }
     }
 
-    // *** New Function: Read knowledge base files ***
+    // *** New Function: Read knowledge base files ***    
     private suspend fun readKnowledgeBase(): String = withContext(Dispatchers.IO) {
         val topicsDir = File(filesDir, TOPICS_DIR_NAME)
         if (!topicsDir.exists() || !topicsDir.isDirectory) {
-             Log.w(TAG, "Topics directory does not exist: ${topicsDir.absolutePath}")
+            Log.w(TAG, "Topics directory does not exist: ${topicsDir.absolutePath}")
             return@withContext "" // Return empty if directory doesn't exist
         }
-
+          // Log all files in the directory to help troubleshoot
+        Log.d(TAG, "Scanning knowledge base directory: ${topicsDir.absolutePath}")
+        topicsDir.listFiles()?.forEach { file ->
+            Log.d(TAG, "Found file: ${file.name}, isFile=${file.isFile}, extension=${file.extension}")
+        }
+        
         val knowledgeContent = StringBuilder()
         try {
-            topicsDir.listFiles { file -> file.isFile && file.extension.equals("txt", ignoreCase = true) }?.forEach { file ->
+            // Updated to include both .txt and .md files
+            topicsDir.listFiles { file -> 
+                file.isFile && (file.extension.equals("txt", ignoreCase = true) || file.extension.equals("md", ignoreCase = true)) 
+            }?.forEach { file ->
                 try {
+                    Log.d(TAG, "Reading knowledge base file: ${file.name}")
                     knowledgeContent.append("--- Topic: ${file.name} ---\n")
                     knowledgeContent.append(file.readText())
                     knowledgeContent.append("\n\n")
@@ -379,12 +387,13 @@ class ShareReceiverActivity : AppCompatActivity() {
                     topics.add(Topic(currentTopicName, currentContent.toString().trim()))
                     currentContent.clear()
                 }
-                
-                // Extract new topic name (remove "--- Topic: " and ".txt ---")
+                  // Extract new topic name (remove "--- Topic: " and " ---")
                 currentTopicName = line.removePrefix("--- Topic:").removeSuffix("---").trim()
-                // Remove .txt extension if present
+                // Remove file extension if present (.txt or .md)
                 if (currentTopicName.endsWith(".txt", ignoreCase = true)) {
                     currentTopicName = currentTopicName.substring(0, currentTopicName.length - 4).trim()
+                } else if (currentTopicName.endsWith(".md", ignoreCase = true)) {
+                    currentTopicName = currentTopicName.substring(0, currentTopicName.length - 3).trim()
                 }
             } else if (currentTopicName.isNotEmpty()) {
                 // Add content line to current topic

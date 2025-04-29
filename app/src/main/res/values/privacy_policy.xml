@@ -6,19 +6,19 @@
         <body style="padding: 16px;">
             <h1>Privacy Policy</h1>
             <p><strong>Effective Date:</strong> April 29, 2025</p>
-              <h2>What We Collect</h2>
+            <h2>What We Collect</h2>
             <ul>
-                <li><strong>Images:</strong> Only the images you explicitly share with the app are processed using OpenAI's services.</li>
+                <li><strong>Images:</strong> Only the images you explicitly share with the app are processed using OpenAI\'s services.</li>
                 <li><strong>Server URL:</strong> The URL you configure is stored locally on your device.</li>
                 <li><strong>OpenAI API Key:</strong> Your API key is securely encrypted and stored only on your device.</li>
                 <li><strong>Network status:</strong> Basic connectivity information.</li>
             </ul>
-              <h2>How We Use Your Data</h2>
-            <p>We only use your data to process images via OpenAI's API services using your own API key. Images and API keys are not stored by us.</p>
+            <h2>How We Use Your Data</h2>
+            <p>We only use your data to process images via OpenAI\'s API services using your own API key. Images and API keys are not stored by us.</p>
             
             <h2>Security</h2>
-            <p>Your API key is securely encrypted using Android's KeyStore system and EncryptedSharedPreferences. All communications with OpenAI's servers are encrypted using HTTPS protocols.</p>
-              <h2>Your Control</h2>
+            <p>Your API key is securely encrypted using Android\'s KeyStore system and EncryptedSharedPreferences. All communications with OpenAI\'s servers are encrypted using HTTPS protocols.</p>
+            <h2>Your Control</h2>
             <p>You have complete control over which images to share and how your API key is used. Your API key never leaves your device except to make direct API calls to OpenAI. You can view detailed information about API key security in the app settings.</p>
             
             <h2>Contact</h2>

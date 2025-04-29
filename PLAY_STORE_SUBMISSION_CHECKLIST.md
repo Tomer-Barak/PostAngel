@@ -1,12 +1,12 @@
-# BarakBot Screen Share            storeFile file('path/to/postmuse.keystore')
-            storePassword 'your-store-password'
-            keyAlias "postmuse" 
-            keyPassword 'your-key-password'oogle Play Store Submission Checklist
+# PostMuse Social Media Assistant - Google Play Store Submission Checklist
 
 ## 1. Finalize App Development
-- [x] Update package name to `com.barakbot.screenshare`
-- [x] Change app name to "BarakBot"
-- [x] Update app theme
+- [x] Update package name to `com.postmuse.socialmedia`
+- [x] Set app name to "PostMuse"
+- [x] Update app theme and UI to match social media functionality
+- [x] Implement knowledge base management features
+- [x] Add social media post creation workflow
+- [x] Add social media response suggestion via screenshot analysis
 - [x] Create Privacy Policy activity and layout
 - [x] Update network security configuration
 - [x] Create README with publishing instructions
@@ -15,6 +15,8 @@
 ## 2. Before Generating the Release Build
 - [ ] Create app icons in proper sizes (use existing icons or create new ones)
 - [ ] Test the app thoroughly on multiple devices/emulators
+- [ ] Test both workflows: social media post creation and response suggestion
+- [ ] Verify knowledge base management functionality
 - [ ] Create a keystore for app signing
 - [ ] Configure signing in build.gradle
 
@@ -24,13 +26,12 @@
 android {
     signingConfigs {
         release {
-            storeFile file('path/to/barakbot.keystore')
+            storeFile file('path/to/postmuse.keystore')
             storePassword "your-store-password"
-            keyAlias "barakbot" 
+            keyAlias "postmuse" 
             keyPassword "your-key-password"
         }
     }
-    
     buildTypes {
         release {
             minifyEnabled true
