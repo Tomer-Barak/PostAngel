@@ -33,10 +33,15 @@ class ShareReceiverActivity : AppCompatActivity() {
     
     private lateinit var statusTextView: TextView
     private lateinit var progressBar: ProgressBar
-    private lateinit var closeButton: Button    
-    private lateinit var copyButton: Button // Added copy button
+    private lateinit var closeButton: Button
+    private lateinit var copyButton: Button
+    private lateinit var refreshButton: Button // Added refresh button
     
     private val TAG = "ShareReceiverActivity"
+    
+    // Cache extracted content for refresh functionality
+    private var cachedExtractedContent: String? = null
+    private var cachedKnowledgeBase: String? = null
     
     companion object {
         const val TOPICS_DIR_NAME = "Topics" // Directory for knowledge base
@@ -49,9 +54,11 @@ class ShareReceiverActivity : AppCompatActivity() {
         statusTextView = findViewById(R.id.statusTextView)
         progressBar = findViewById(R.id.progressBar)
         closeButton = findViewById(R.id.closeButton)
-        copyButton = findViewById(R.id.copyButton) // Initialize copy button
+        copyButton = findViewById(R.id.copyButton)
+        refreshButton = findViewById(R.id.refreshButton) // Initialize refresh button
         
         copyButton.visibility = View.GONE // Initially hide copy button
+        refreshButton.visibility = View.GONE // Initially hide refresh button
         
         closeButton.setOnClickListener {
             finish()
@@ -63,6 +70,10 @@ class ShareReceiverActivity : AppCompatActivity() {
             val clip = ClipData.newPlainText("PostMuse Response", statusTextView.text)
             clipboard.setPrimaryClip(clip)
             Toast.makeText(this, "Response copied to clipboard", Toast.LENGTH_SHORT).show()
+        }
+        
+        refreshButton.setOnClickListener {
+            refreshResponse()
         }
         
         // Handle the intent
@@ -89,14 +100,21 @@ class ShareReceiverActivity : AppCompatActivity() {
             lifecycleScope.launch {
                 showError(getString(R.string.api_key_required))
             }
-            Toast.makeText(this, "Please set your OpenAI API key in settings", Toast.LENGTH_LONG).show()
-            // Open settings so user can set API key
+            Toast.makeText(this, "Please set your OpenAI API key in settings", Toast.LENGTH_LONG).show()            // Open settings so user can set API key
             val settingsIntent = Intent(this, SettingsActivity::class.java)
             startActivity(settingsIntent)
             return
         }
         
-        (intent.getParcelableExtra(Intent.EXTRA_STREAM, Uri::class.java))?.let { imageUri ->
+        // Handle API level compatibility - use the appropriate getParcelableExtra method
+        val imageUri = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            intent.getParcelableExtra(Intent.EXTRA_STREAM, Uri::class.java)
+        } else {
+            @Suppress("DEPRECATION")
+            intent.getParcelableExtra(Intent.EXTRA_STREAM) as? Uri
+        }
+        
+        imageUri?.let { uri ->
             CoroutineScope(Dispatchers.IO).launch {
                 try {
                     // Convert URI to file
@@ -169,6 +187,7 @@ class ShareReceiverActivity : AppCompatActivity() {
             statusTextView.text = "Extracting post content..." // Update status
             progressBar.visibility = View.VISIBLE
             copyButton.visibility = View.GONE // Hide copy button during processing
+            refreshButton.visibility = View.GONE // Hide refresh button during processing
         }
             
         // Read file as base64
@@ -179,6 +198,9 @@ class ShareReceiverActivity : AppCompatActivity() {
             // Stage 1: Extract content from image
             val extractedContent = processImageWithVisionAPI(client, apiKey, base64Image)
             
+            // Cache the extracted content
+            cachedExtractedContent = extractedContent
+            
             withContext(Dispatchers.Main) {
                 statusTextView.text = "Evaluating opportunity..." // Update status
             }            // Stage 2: Evaluate opportunity based on knowledge base
@@ -186,11 +208,16 @@ class ShareReceiverActivity : AppCompatActivity() {
                 statusTextView.text = "Evaluating for potential response opportunities..." // Update status
             }
               val knowledgeBase = readKnowledgeBase()
+            
+            // Cache the knowledge base
+            cachedKnowledgeBase = knowledgeBase
+            
             if (knowledgeBase.isBlank()) {
                 withContext(Dispatchers.Main) {
                     statusTextView.text = "No topics found in your knowledge base. Please add topic files (.txt or .md) to the \"${TOPICS_DIR_NAME}\" folder."
                     progressBar.visibility = View.GONE
                     copyButton.visibility = View.GONE
+                    refreshButton.visibility = View.GONE
                 }
                 return
             }
@@ -214,6 +241,7 @@ class ShareReceiverActivity : AppCompatActivity() {
                     statusTextView.text = "Response suggestion based on \"$topicName\":\n\n$suggestedResponse" 
                     progressBar.visibility = View.GONE
                     copyButton.visibility = View.VISIBLE // Show copy button
+                    refreshButton.visibility = View.VISIBLE // Show refresh button when we have a response
                 }
             } else {
                 // No opportunity found
@@ -221,6 +249,7 @@ class ShareReceiverActivity : AppCompatActivity() {
                     statusTextView.text = "No relevant response opportunity found based on your topics."
                     progressBar.visibility = View.GONE
                     copyButton.visibility = View.GONE
+                    refreshButton.visibility = View.GONE
                 }
             }
             
@@ -618,6 +647,90 @@ class ShareReceiverActivity : AppCompatActivity() {
             Toast.makeText(this@ShareReceiverActivity, 
                 "Error processing image", 
                 Toast.LENGTH_LONG).show()
+        }
+    }
+
+    /**
+     * Refreshes the response by looking for another opportunity using the cached extracted content
+     * and knowledge base. Will randomly shuffle topics to provide variety in responses.
+     */
+    private fun refreshResponse() {
+        // Check if we have cached content to work with
+        if (cachedExtractedContent.isNullOrBlank() || cachedKnowledgeBase.isNullOrBlank()) {
+            Toast.makeText(this, "Unable to refresh response. Missing content.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // Show progress indicators
+        progressBar.visibility = View.VISIBLE
+        statusTextView.text = "Finding another response opportunity..."
+        copyButton.visibility = View.GONE
+        refreshButton.visibility = View.GONE        // Get API key
+        val apiKey = SecureKeyStore.getOpenAIApiKey(this)
+        if (apiKey.isEmpty()) {
+            // Show error in main thread for non-suspend context
+            lifecycleScope.launch {
+                showError("API key required for generating responses")
+            }
+            return
+        }
+
+        // Launch coroutine to generate new response
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val client = OkHttpClient.Builder()
+                    .followSslRedirects(true)
+                    .followRedirects(true)
+                    .build()
+                
+                // Try to find a new opportunity with the same content
+                val relevantContext = evaluateOpportunity(
+                    client, 
+                    apiKey, 
+                    cachedExtractedContent!!, 
+                    cachedKnowledgeBase!!
+                )
+
+                if (relevantContext != null) {
+                    withContext(Dispatchers.Main) {
+                        statusTextView.text = "Found another opportunity! Generating response..."
+                    }
+                    
+                    // Generate new response
+                    val suggestedResponse = generateResponse(
+                        client, 
+                        apiKey, 
+                        cachedExtractedContent!!, 
+                        relevantContext
+                    )
+                    
+                    // Extract topic name for display
+                    val topicPattern = "Topic: ([^\\n]+)".toRegex()
+                    val topicMatch = topicPattern.find(relevantContext)
+                    val topicName = topicMatch?.groupValues?.get(1) ?: "a relevant topic"
+                    
+                    // Update UI
+                    withContext(Dispatchers.Main) {
+                        statusTextView.text = "Response suggestion based on \"$topicName\":\n\n$suggestedResponse"
+                        progressBar.visibility = View.GONE
+                        copyButton.visibility = View.VISIBLE
+                        refreshButton.visibility = View.VISIBLE
+                    }
+                } else {
+                    // No new opportunity found
+                    withContext(Dispatchers.Main) {
+                        statusTextView.text = "No additional response opportunities found."
+                        progressBar.visibility = View.GONE
+                        copyButton.visibility = View.GONE
+                        refreshButton.visibility = View.GONE
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error refreshing response", e)
+                lifecycleScope.launch {
+                    showError("Error refreshing: ${e.message}")
+                }
+            }
         }
     }
 }

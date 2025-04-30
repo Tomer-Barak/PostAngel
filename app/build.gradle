@@ -13,15 +13,22 @@ if (keystorePropertiesFile.exists()) {
 android {
     namespace 'com.postmuse.screenshare'
     compileSdk 34
-
+    
     defaultConfig {          
         applicationId "com.postmuse.screenshare"        
         minSdk 26
         targetSdk 34
-        versionCode 2
-        versionName "1.0.3"
+        versionCode 3
+        versionName "1.0.4"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+    
+    dependenciesInfo {
+        // Disables dependency metadata when building APKs as requested by F-Droid
+        includeInApk = false
+        // Disables dependency metadata when building Android App Bundles
+        includeInBundle = false
     }
     
     signingConfigs {
