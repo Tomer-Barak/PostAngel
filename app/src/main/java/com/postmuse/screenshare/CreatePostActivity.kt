@@ -147,22 +147,35 @@ class CreatePostActivity : AppCompatActivity() {
                 showError("Error: ${e.message}")
             }
         }
-    }
-
-    private fun getTopicDescription(topic: String): String {
-        val topicFile = File(filesDir, "$TOPICS_DIR_NAME/${topic}.txt")
-        return if (topicFile.exists()) {
+    }    private fun getTopicDescription(topic: String): String {
+        // Try with .txt extension first
+        val txtFile = File(filesDir, "$TOPICS_DIR_NAME/${topic}.txt")
+        if (txtFile.exists()) {
             try {
-                topicFile.readText()
+                return txtFile.readText()
             } catch (e: IOException) {
-                Log.e(TAG, "Error reading topic file", e)
-                ""
+                Log.e(TAG, "Error reading .txt topic file", e)
+                // Continue to try .md file if txt file exists but can't be read
             }
-        } else {
-            Log.w(TAG, "Topic file does not exist: ${topicFile.absolutePath}")
-            ""
         }
-    }    private suspend fun generatePromotionalTweet(apiKey: String, topic: String, topicDescription: String, specialInstructions: String = ""): String? {
+        
+        // Try with .md extension if .txt doesn't exist or couldn't be read
+        val mdFile = File(filesDir, "$TOPICS_DIR_NAME/${topic}.md")
+        if (mdFile.exists()) {
+            try {
+                return mdFile.readText()
+            } catch (e: IOException) {
+                Log.e(TAG, "Error reading .md topic file", e)
+            }
+        }
+        
+        // Log if neither file exists
+        if (!txtFile.exists() && !mdFile.exists()) {
+            Log.w(TAG, "Topic file does not exist: ${txtFile.absolutePath} or ${mdFile.absolutePath}")
+        }
+        
+        return ""
+    }private suspend fun generatePromotionalTweet(apiKey: String, topic: String, topicDescription: String, specialInstructions: String = ""): String? {
         val client = OkHttpClient()
         val prompt = constructGenerationPrompt(topic, topicDescription, specialInstructions)
 
