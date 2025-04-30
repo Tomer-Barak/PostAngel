@@ -4,6 +4,12 @@
 
 An Android application that helps users create and respond to social media posts using AI and a personal knowledge base.
 
+## Download
+
+You can download the app directly from:
+- [GitHub Releases](https://github.com/Tomer-Barak/PostMuse/releases) - Latest APK
+- [F-Droid](https://f-droid.org/packages/com.postmuse.screenshare/) - Available after F-Droid review process
+
 ## Features
 
 - Create AI-generated social media posts based on your personal topics
