@@ -46,22 +46,23 @@
         app:layout_constraintTop_toBottomOf="@id/topicSpinner"
         app:layout_constraintLeft_toLeftOf="parent"
         android:layout_marginTop="16dp"
-        android:layout_marginLeft="32dp"/>
-
-    <EditText
+        android:layout_marginLeft="32dp"/>    
+        <EditText
         android:id="@+id/specialInstructionsEditText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="Enter any special instructions for your post"
-        android:minLines="3"
+        android:minLines="1"
         android:gravity="top"
         android:inputType="textMultiLine"
+        android:background="@drawable/edit_text_border"
         app:layout_constraintTop_toBottomOf="@id/specialInstructionsLabel"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         android:layout_marginTop="8dp"
         android:layout_marginLeft="32dp"
-        android:layout_marginRight="32dp"/>      
+        android:layout_marginRight="32dp"
+        android:padding="8dp"/>
     <Button
         android:id="@+id/generatePostButton"
         android:layout_width="wrap_content"
