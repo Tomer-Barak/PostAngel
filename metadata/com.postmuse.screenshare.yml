@@ -27,7 +27,7 @@ Repo: https://github.com/Tomer-Barak/PostMuse.git
 Builds:
   - versionName: "1.0" # Matches app/build.gradle
     versionCode: 1     # Matches app/build.gradle
-    commit: v1.0 # Assumes you create and push the v1.0 tag
+    commit: v1.0.1
     subdir: app
     gradle:
       - yes # Use Gradle wrapper
