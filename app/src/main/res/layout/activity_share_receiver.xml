@@ -15,15 +15,18 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />    <ScrollView
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ScrollView
+        android:id="@+id/scrollView"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:padding="16dp"
-        app:layout_constraintBottom_toTopOf="@+id/closeButton"
+        app:layout_constraintBottom_toTopOf="@+id/copyButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginBottom="24dp">
+        android:layout_marginBottom="8dp">
 
         <TextView
             android:id="@+id/statusTextView"
@@ -40,7 +43,7 @@
         android:layout_height="wrap_content"
         android:text="Copy Response"
         android:visibility="gone" 
-        app:layout_constraintTop_toBottomOf="@+id/statusTextView"
+        app:layout_constraintTop_toBottomOf="@+id/scrollView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@+id/closeButton"

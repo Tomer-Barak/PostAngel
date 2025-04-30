@@ -3,6 +3,13 @@ plugins {
     alias(libs.plugins.kotlin.android)
 }
 
+// Load keystore properties
+def keystorePropertiesFile = rootProject.file("keystore.properties")
+def keystoreProperties = new Properties()
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+}
+
 android {
     namespace 'com.postmuse.screenshare'
     compileSdk 34
@@ -18,13 +25,15 @@ android {
     }
     
     signingConfigs {
-        release {
-            // You'll need to create a keystore file and update these values
-            // Run: keytool -genkey -v -keystore postmuse.keystore -alias postmuse -keyalg RSA -keysize 2048 -validity 10000
-            // storeFile file('path/to/your/keystore/postmuse.keystore')
-            // storePassword "your-store-password"
-            // keyAlias "postmuse"
-            // keyPassword "your-key-password"
+        release {            if (keystorePropertiesFile.exists()) {
+                storeFile rootProject.file(keystoreProperties['storeFile']) // Use rootProject.file()
+                storePassword keystoreProperties['storePassword']
+                keyAlias keystoreProperties['keyAlias']
+                keyPassword keystoreProperties['keyPassword']
+            } else {
+                println("Warning: keystore.properties not found. Release build will not be signed.")
+                // Optionally configure a dummy signing config or throw an error
+            }
         }
     }
 

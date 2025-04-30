@@ -38,3 +38,8 @@ out/
 
 # Python scripts
 python_scripts/
+
+# keystore
+*.jks
+keystore.properties
+
