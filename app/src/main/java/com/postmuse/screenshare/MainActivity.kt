@@ -5,66 +5,93 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
+import android.widget.TextView
 import java.io.File
 
 class MainActivity : AppCompatActivity() {
+      private lateinit var titleTextView: TextView
+    private lateinit var descriptionTextView: TextView
+    private lateinit var createPostDescriptionTextView: TextView
+    private lateinit var topicsDescriptionTextView: TextView
+    private lateinit var apiKeyDescriptionTextView: TextView
     
+    private lateinit var createPostButton: Button
     private lateinit var settingsButton: Button
-    private lateinit var privacyButton: Button
     private lateinit var knowledgeBaseButton: Button
+    private lateinit var privacyButton: Button
     
     companion object {
         private const val TAG = "MainActivity"
         const val TOPICS_DIR_NAME = "Topics" // Same as in ShareReceiverActivity
-    }    override fun onCreate(savedInstanceState: Bundle?) {
+    }
+    
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-          // Ensure Topics directory exists
+        
+        // Ensure Topics directory exists
         ensureTopicsDirectoryExists()
+        
         // Initialize UI elements
+        initializeViews()
+        setupClickListeners()
+    }
+    
+    /**
+     * Initialize all UI elements from the layout
+     */
+    private fun initializeViews() {        // TextViews
+        titleTextView = findViewById(R.id.titleTextView)
+        descriptionTextView = findViewById(R.id.descriptionTextView)
+        createPostDescriptionTextView = findViewById(R.id.createPostDescriptionTextView)
+        topicsDescriptionTextView = findViewById(R.id.topicsDescriptionTextView)
+        apiKeyDescriptionTextView = findViewById(R.id.apiKeyDescriptionTextView)
+        
+        // Buttons
+        createPostButton = findViewById(R.id.createPostButton)
         settingsButton = findViewById(R.id.settingsButton)
-          // Set up click listener for settings button
+        knowledgeBaseButton = findViewById(R.id.knowledgeBaseButton)
+        
+        // Privacy button might not be in all layout versions
+        try {
+            privacyButton = findViewById(R.id.privacyButton)
+        } catch (e: Exception) {
+            Log.d(TAG, "Privacy button not found in layout", e)
+        }
+    }
+    
+    /**
+     * Set up click listeners for all buttons
+     */
+    private fun setupClickListeners() {
+        // Create Post button
+        createPostButton.setOnClickListener {
+            Log.d(TAG, "Create Post button clicked")
+            val intent = Intent(this, CreatePostActivity::class.java)
+            startActivity(intent)
+        }
+        
+        // Settings button
         settingsButton.setOnClickListener {
             val intent = Intent(this, SettingsActivity::class.java)
             startActivity(intent)
         }
         
-        // Add knowledge base button
-        try {
-            knowledgeBaseButton = findViewById(R.id.knowledgeBaseButton)
-            knowledgeBaseButton.setOnClickListener {
-                val intent = Intent(this, KnowledgeBaseActivity::class.java)
-                startActivity(intent)
-            }        } catch (e: Exception) {
-            // Knowledge base button might not be in the layout yet
+        // Knowledge Base button
+        knowledgeBaseButton.setOnClickListener {
+            val intent = Intent(this, KnowledgeBaseActivity::class.java)
+            startActivity(intent)
         }
-
-        // Set up create post button (already in layout)
+        
+        // Privacy button (if available)
         try {
-            val createPostButton = findViewById<Button>(R.id.createPostButton)
-            createPostButton.setOnClickListener {
-                Log.d(TAG, "Create Post button clicked")
-                val intent = Intent(this, CreatePostActivity::class.java)
-                startActivity(intent)
-            }        } catch (e: Exception) {
-            Log.e(TAG, "Error setting up createPostButton", e)
-        }
-
-        // Add privacy policy button if it exists in the layout
-        try {
-            privacyButton = findViewById(R.id.privacyButton)
             privacyButton.setOnClickListener {
                 val intent = Intent(this, PrivacyPolicyActivity::class.java)
                 startActivity(intent)
             }
         } catch (e: Exception) {
-            // Privacy button might not be in the layout yet
+            Log.d(TAG, "Privacy button click listener not set", e)
         }
-
-        
-        
-        // Main activity is just informational
-        // The main functionality is in ShareReceiverActivity
     }
     
     /**

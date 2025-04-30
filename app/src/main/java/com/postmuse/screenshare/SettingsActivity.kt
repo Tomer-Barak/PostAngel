@@ -9,17 +9,19 @@ import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.widget.SwitchCompat
 import java.io.File
 
-class SettingsActivity : AppCompatActivity() {        private lateinit var serverUrlEditText: EditText
+class SettingsActivity : AppCompatActivity() {        
+    private lateinit var serverUrlEditText: EditText    
     private lateinit var secureApiKeyEditText: SecureApiKeyEditText
     private lateinit var saveButton: Button
     private lateinit var privacyPolicyLink: TextView
-    private lateinit var knowledgeBaseButton: Button
     private lateinit var apiSecurityInfoButton: ImageButton
     private lateinit var learnMoreLink: TextView
-    
-    override fun onCreate(savedInstanceState: Bundle?) {
+    private lateinit var darkModeSwitch: SwitchCompat
+      override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)        // Initialize UI elements
         serverUrlEditText = findViewById(R.id.serverUrlEditText)
@@ -33,6 +35,9 @@ class SettingsActivity : AppCompatActivity() {        private lateinit var serve
         apiSecurityInfoButton = apiKeyCardView.findViewById(R.id.apiSecurityInfoButton)
         learnMoreLink = apiKeyCardView.findViewById(R.id.learnMoreLink)
         
+        // Initialize dark mode switch
+        darkModeSwitch = findViewById(R.id.darkModeSwitch)
+        
         saveButton = findViewById(R.id.saveButton)
           // Try to find privacy policy link if it exists
         try {
@@ -42,13 +47,7 @@ class SettingsActivity : AppCompatActivity() {        private lateinit var serve
             }
         } catch (e: Exception) {
             // Privacy policy link might not be in layout yet
-        }
-          // Set up knowledge base button
-        knowledgeBaseButton = findViewById(R.id.knowledgeBaseButton)
-        knowledgeBaseButton.setOnClickListener {
-            startActivity(Intent(this, KnowledgeBaseActivity::class.java))
-        }
-          // Set up API security info button
+        }          // Set up API security info button
         apiSecurityInfoButton.setOnClickListener {
             ApiKeySecurityDialog.show(this)
         }
@@ -69,8 +68,25 @@ class SettingsActivity : AppCompatActivity() {        private lateinit var serve
         // Load the settings from preferences
         val serverUrl = PrefsUtil.getServerUrl(this)
         val apiKey = SecureKeyStore.getOpenAIApiKey(this)
+        val isDarkModeEnabled = PrefsUtil.isDarkModeEnabled(this)
+        
         serverUrlEditText.setText(serverUrl)
         secureApiKeyEditText.setText(apiKey)
+        darkModeSwitch.isChecked = isDarkModeEnabled
+        
+        // Set up dark mode switch listener
+        darkModeSwitch.setOnCheckedChangeListener { _, isChecked ->
+            applyDarkMode(isChecked)
+        }
+    }
+    
+    private fun applyDarkMode(enabled: Boolean) {
+        PrefsUtil.setDarkModeEnabled(this, enabled)
+        if (enabled) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+        }
     }private fun saveSettings() {
         val serverUrl = serverUrlEditText.text.toString().trim()
         val apiKey = secureApiKeyEditText.getText().trim()
@@ -98,10 +114,10 @@ class SettingsActivity : AppCompatActivity() {        private lateinit var serve
                 Toast.makeText(this, "Could not create Topics directory", Toast.LENGTH_SHORT).show()
             }
         }
-        // *** End Added ***
-          // Save the settings
+        // *** End Added ***        // Save the settings
         PrefsUtil.setServerUrl(this, serverUrl)
         SecureKeyStore.setOpenAIApiKey(this, apiKey)
+        PrefsUtil.setDarkModeEnabled(this, darkModeSwitch.isChecked)
         Toast.makeText(this, getString(R.string.settings_saved), Toast.LENGTH_SHORT).show()
         finish()
     }

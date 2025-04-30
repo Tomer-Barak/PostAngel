@@ -16,15 +16,14 @@
     <string name="enter_openai_api_key">Enter your OpenAI API key</string>    <string name="api_key_required">API key is required for image processing</string>
     <string name="processing_image">Processing image with AI...</string>
     <string name="image_processed">Image processed successfully!</string>
-    
-    <!-- Knowledge Base -->
-    <string name="knowledge_base">Knowledge Base</string>
-    <string name="manage_knowledge_base">Manage Knowledge Base</string>
+      <!-- Topics to promote -->
+    <string name="knowledge_base">Topics to promote</string>
+    <string name="manage_knowledge_base">Manage Topics to promote</string>
     <string name="knowledge_base_description">Manage your topics for response generation</string>
     <string name="no_topics_found">No topics found</string>
     <string name="add_topic">Add Topic</string>
-    <string name="edit_topic">Edit Topic</string>
-    <string name="delete_topic">Delete Topic</string>
+    <string name="edit_topic">Edit Topic</string>    <string name="delete_topic">Delete Topic</string>
+    <string name="delete_all_topics">Delete All Topics</string>
     <string name="save_topic">Save Topic</string>
     <string name="topic_saved">Topic saved successfully</string>
     <string name="enter_topic_content">Enter topic content here…</string>
@@ -45,9 +44,7 @@
         Since we don\'t route your API requests through our servers, we never see your data or API key.
     </string>
     <string name="api_key_security_info">API key security info</string>
-    <string name="learn_about_security">Learn about API key security</string>
-
-    <!-- Create Post -->
+    <string name="learn_about_security">Learn about API key security</string>   
     <string name="create_post">Create Post</string>
     <string name="generate_post">Generate Post</string>
     <string name="copy_post">Copy Post</string>
@@ -56,4 +53,9 @@
     <string name="generating_post">Generating post...</string>
     <string name="post_copied">Post copied to clipboard</string>
     <string name="tweet_format">TWEET: Check out this topic! %1$s #PostMuse\n%2$s</string>
+    
+    <!-- Dark Mode -->
+    <string name="dark_mode">Dark Mode</string>
+    <string name="dark_mode_description">Enable dark theme</string>
+    <string name="appearance">Appearance</string>
 </resources>

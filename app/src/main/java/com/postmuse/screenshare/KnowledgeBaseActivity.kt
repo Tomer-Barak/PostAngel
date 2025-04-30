@@ -155,14 +155,57 @@ class KnowledgeBaseActivity : AppCompatActivity() {    companion object {
         menuInflater.inflate(R.menu.menu_knowledge_base, menu)
         return true
     }
-    
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+      override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_import -> {
                 importFilesFromStorage()
                 true
             }
+            R.id.action_delete_all -> {
+                confirmDeleteAllTopics()
+                true
+            }
             else -> super.onOptionsItemSelected(item)
+        }
+    }
+    
+    private fun confirmDeleteAllTopics() {
+        if (topics.isEmpty()) {
+            Toast.makeText(this, "No topics to delete", Toast.LENGTH_SHORT).show()
+            return
+        }
+        
+        AlertDialog.Builder(this)
+            .setTitle(R.string.delete_all_topics)
+            .setMessage("Are you sure you want to delete all topics? This action cannot be undone.")
+            .setPositiveButton("Delete All") { _, _ ->
+                deleteAllTopics()
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+    
+    private fun deleteAllTopics() {
+        try {
+            var deletedCount = 0
+            val topicsCopy = topics.toList() // Create a copy to avoid concurrent modification
+            
+            for (topic in topicsCopy) {
+                if (topic.file.delete()) {
+                    deletedCount++
+                }
+            }
+            
+            // Update UI
+            topics.clear()
+            adapter.notifyDataSetChanged()
+            findViewById<View>(R.id.emptyView).visibility = View.VISIBLE
+            recyclerView.visibility = View.GONE
+            
+            Toast.makeText(this, "Deleted $deletedCount topics", Toast.LENGTH_SHORT).show()
+        } catch (e: Exception) {
+            Log.e(TAG, "Error deleting all topics", e)
+            Toast.makeText(this, "Error deleting topics: ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }
       private fun loadTopics() {
