@@ -19,8 +19,9 @@ import org.json.JSONObject
 import java.io.File
 import java.io.IOException
 
-class CreatePostActivity : AppCompatActivity() {
+class CreatePostActivity : AppCompatActivity() {    
     private lateinit var topicSpinner: Spinner
+    private lateinit var specialInstructionsEditText: EditText
     private lateinit var generateButton: Button
     private lateinit var generatedPostView: TextView
     private lateinit var copyButton: Button
@@ -33,10 +34,9 @@ class CreatePostActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_create_post)
-
-        // Initialize views
+        setContentView(R.layout.activity_create_post)        // Initialize views
         topicSpinner = findViewById(R.id.topicSpinner)
+        specialInstructionsEditText = findViewById(R.id.specialInstructionsEditText)
         generateButton = findViewById(R.id.generatePostButton)
         generatedPostView = findViewById(R.id.generatedPostTextView)
         copyButton = findViewById(R.id.copyPostButton)
@@ -45,12 +45,13 @@ class CreatePostActivity : AppCompatActivity() {
         copyButton.visibility = View.GONE
 
         // Load topics into spinner
-        loadTopics()        // Set up click listeners
+        loadTopics()        // Set up click listeners        
         generateButton.setOnClickListener {
             val selectedTopic = topicSpinner.selectedItem?.toString()
             if (selectedTopic != null) {
+                val specialInstructions = specialInstructionsEditText.text.toString().trim()
                 lifecycleScope.launch {
-                    generatePost(selectedTopic)
+                    generatePost(selectedTopic, specialInstructions)
                 }
             }
         }
@@ -108,7 +109,7 @@ class CreatePostActivity : AppCompatActivity() {
         }
 
         return topics
-    }    private suspend fun generatePost(topic: String) {
+    }    private suspend fun generatePost(topic: String, specialInstructions: String = "") {
         withContext(Dispatchers.Main) {
             // Show loading state
             generateButton.isEnabled = false
@@ -130,7 +131,7 @@ class CreatePostActivity : AppCompatActivity() {
                     return@withContext
                 }
 
-                val generatedPost = generatePromotionalTweet(apiKey, topic, topicContent)
+                val generatedPost = generatePromotionalTweet(apiKey, topic, topicContent, specialInstructions)
                 
                 withContext(Dispatchers.Main) {
                     if (generatedPost != null) {
@@ -161,11 +162,9 @@ class CreatePostActivity : AppCompatActivity() {
             Log.w(TAG, "Topic file does not exist: ${topicFile.absolutePath}")
             ""
         }
-    }
-
-    private suspend fun generatePromotionalTweet(apiKey: String, topic: String, topicDescription: String): String? {
+    }    private suspend fun generatePromotionalTweet(apiKey: String, topic: String, topicDescription: String, specialInstructions: String = ""): String? {
         val client = OkHttpClient()
-        val prompt = constructGenerationPrompt(topic, topicDescription)
+        val prompt = constructGenerationPrompt(topic, topicDescription, specialInstructions)
 
         val jsonPayload = JSONObject().apply {
             put("model", "gpt-4o-mini")
@@ -226,9 +225,16 @@ class CreatePostActivity : AppCompatActivity() {
             Log.e(TAG, "Error generating tweet", e)
             null
         }
-    }
-
-    private fun constructGenerationPrompt(topic: String, topicDescription: String): String {
+    }    private fun constructGenerationPrompt(topic: String, topicDescription: String, specialInstructions: String = ""): String {
+        val specialInstructionsBlock = if (specialInstructions.isNotBlank()) {
+            """
+            Special instructions:
+            $specialInstructions
+            """
+        } else {
+            ""
+        }
+        
         return """
             You are creating a social media post to promote a specific topic.
             
@@ -251,7 +257,7 @@ class CreatePostActivity : AppCompatActivity() {
             
             Topic description:
             $topicDescription
-            
+            ${specialInstructionsBlock}
             Create an engaging promotional post for this topic.
         """.trimIndent()
     }

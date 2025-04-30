@@ -6,4 +6,9 @@
         android:title="Import Files"
         android:icon="@android:drawable/ic_menu_upload"
         app:showAsAction="ifRoom" />
+     <item
+        android:id="@+id/action_delete_all"
+        android:title="Delete All"
+        android:icon="@android:drawable/ic_menu_delete"
+        app:showAsAction="never" />
 </menu>

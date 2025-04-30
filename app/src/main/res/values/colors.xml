@@ -1,4 +1,5 @@
 <resources>
+    <!-- Original Colors (Keeping for compatibility) -->
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>
@@ -6,4 +7,23 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    
+    <!-- Icon-derived Color Palette -->
+    <color name="primary">#F89630</color>
+    <color name="primary_variant">#F7952F</color>
+    <color name="primary_dark">#D67D20</color>
+    <color name="accent">#F99932</color>
+    <color name="background_light">#F1E8DC</color>
+    <color name="surface_light">#F2E9DD</color>
+    <color name="on_primary">#FFFFFF</color>
+    <color name="on_background">#333333</color>
+    
+    <!-- Dark Mode Colors -->
+    <color name="primary_night">#FF9D45</color>
+    <color name="primary_variant_night">#E58A38</color>
+    <color name="primary_dark_night">#D67B20</color>
+    <color name="accent_night">#FFA24D</color>
+    <color name="background_dark">#1E1B16</color>
+    <color name="surface_dark">#2A2620</color>
+    <color name="on_background_dark">#E6E1D8</color>
 </resources>
