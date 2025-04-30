@@ -1,0 +1,11 @@
+An Android application that helps users create and respond to social media posts using AI and a personal knowledge base.
+
+Features:
+* Create AI-generated social media posts based on your personal topics
+* Share screenshots of social media posts to get suggested responses
+* Intelligent response generation that promotes your preferred topics when relevant
+* Uses OpenAI's Vision API to analyze screenshots of social media posts
+* Uses OpenAI's language models to create contextual responses and posts
+* Configurable settings for your OpenAI API Key
+* Maintain a personal knowledge base of topics you want to promote
+* Open source and privacy-focused
