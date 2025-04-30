@@ -24,29 +24,36 @@
     <string name="no_topics_found">No topics found</string>
     <string name="add_topic">Add Topic</string>
     <string name="edit_topic">Edit Topic</string>
-    <string name="delete_topic">Delete Topic</string>    <string name="save_topic">Save Topic</string>
-    <string name="topic_saved">Topic saved successfully</string>    <string name="enter_topic_content">Enter topic content here…</string>      <!-- API Key Security -->    <string name="api_key_security_title">API Key Security Information</string>
-    <string name="api_key_security_explanation"><![CDATA[
-        <p><b>Your API Key is stored securely</b><br>
-        Your OpenAI API key is encrypted and stored securely on your device using Android\'s EncryptedSharedPreferences. This encryption uses the Android KeyStore system for maximum security.</p>
-        
-        <p><b>Client-side only architecture</b><br>
-        All API requests are made <b>directly from your device to OpenAI</b>. Your API key is never sent to our servers or stored elsewhere.</p>
-        
-        <p><b>Complete transparency</b><br>
-        You can view exactly how your API key is handled in our <a href="https://github.com/Tomer-Barak/PostMuse">open-source code</a>. The app code shows that API requests go directly to OpenAI\'s servers with your key.</p>
-        
-        <p><b>API key usage</b><br>
-        Your key is only used for:</p>
-        <ul>
-            <li>Text generation with OpenAI\'s API</li>
-            <li>Image analysis with Vision API</li>
-        </ul>
-        
-        <p><b>Your data stays private</b><br>
-        Since we don\'t route your API requests through our servers, we never see your data or API key.</p>
-    ]]></string>
-    
+    <string name="delete_topic">Delete Topic</string>
+    <string name="save_topic">Save Topic</string>
+    <string name="topic_saved">Topic saved successfully</string>
+    <string name="enter_topic_content">Enter topic content here…</string>
+
+    <!-- API Key Security -->
+    <string name="api_key_security_title">API Key Security Information</string>    <string name="api_key_security_explanation">
+        Your API Key is stored securely.\n
+        Your OpenAI API key is encrypted and stored securely on your device using Android\'s EncryptedSharedPreferences. This encryption uses the Android KeyStore system for maximum security.\n\n
+        Client-side only architecture:\n
+        All API requests are made directly from your device to OpenAI. Your API key is never sent to our servers or stored elsewhere.\n\n
+        Complete transparency:\n
+        You can view exactly how your API key is handled in our open-source code at https://github.com/Tomer-Barak/PostMuse. The app code shows that API requests go directly to OpenAI\'s servers with your key.\n\n
+        API key usage:\n
+        Your key is only used for:\n
+        - Text generation with OpenAI\'s API\n
+        - Image analysis with Vision API\n\n
+        Your data stays private:\n
+        Since we don\'t route your API requests through our servers, we never see your data or API key.
+    </string>
     <string name="api_key_security_info">API key security info</string>
     <string name="learn_about_security">Learn about API key security</string>
+
+    <!-- Create Post -->
+    <string name="create_post">Create Post</string>
+    <string name="generate_post">Generate Post</string>
+    <string name="copy_post">Copy Post</string>
+    <string name="create_post_title">Create Social Media Post</string>
+    <string name="select_topic">Select Topic</string>
+    <string name="generating_post">Generating post...</string>
+    <string name="post_copied">Post copied to clipboard</string>
+    <string name="tweet_format">TWEET: Check out this topic! %1$s #PostMuse\n%2$s</string>
 </resources>

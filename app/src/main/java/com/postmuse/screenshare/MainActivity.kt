@@ -23,13 +23,34 @@ class MainActivity : AppCompatActivity() {
         ensureTopicsDirectoryExists()
         // Initialize UI elements
         settingsButton = findViewById(R.id.settingsButton)
-        
-        // Set up click listener for settings button
+          // Set up click listener for settings button
         settingsButton.setOnClickListener {
             val intent = Intent(this, SettingsActivity::class.java)
             startActivity(intent)
         }
-          // Add privacy policy button if it exists in the layout
+        
+        // Add knowledge base button
+        try {
+            knowledgeBaseButton = findViewById(R.id.knowledgeBaseButton)
+            knowledgeBaseButton.setOnClickListener {
+                val intent = Intent(this, KnowledgeBaseActivity::class.java)
+                startActivity(intent)
+            }        } catch (e: Exception) {
+            // Knowledge base button might not be in the layout yet
+        }
+
+        // Set up create post button (already in layout)
+        try {
+            val createPostButton = findViewById<Button>(R.id.createPostButton)
+            createPostButton.setOnClickListener {
+                Log.d(TAG, "Create Post button clicked")
+                val intent = Intent(this, CreatePostActivity::class.java)
+                startActivity(intent)
+            }        } catch (e: Exception) {
+            Log.e(TAG, "Error setting up createPostButton", e)
+        }
+
+        // Add privacy policy button if it exists in the layout
         try {
             privacyButton = findViewById(R.id.privacyButton)
             privacyButton.setOnClickListener {
@@ -39,18 +60,10 @@ class MainActivity : AppCompatActivity() {
         } catch (e: Exception) {
             // Privacy button might not be in the layout yet
         }
+
         
-        // Add knowledge base button
-        try {
-            knowledgeBaseButton = findViewById(R.id.knowledgeBaseButton)
-            knowledgeBaseButton.setOnClickListener {
-                val intent = Intent(this, KnowledgeBaseActivity::class.java)
-                startActivity(intent)
-            }
-        } catch (e: Exception) {
-            // Knowledge base button might not be in the layout yet
-        }
-          // Main activity is just informational
+        
+        // Main activity is just informational
         // The main functionality is in ShareReceiverActivity
     }
     

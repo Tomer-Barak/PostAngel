@@ -51,12 +51,17 @@
             android:name=".KnowledgeBaseActivity"
             android:exported="false"
             android:label="Knowledge Base" />
-            
-        <!-- Topic Editor activity -->
+              <!-- Topic Editor activity -->
         <activity
             android:name=".TopicEditorActivity"
             android:exported="false"
             android:label="Edit Topic" />
+            
+        <!-- Create Post activity -->
+        <activity
+            android:name=".CreatePostActivity"
+            android:exported="false"
+            android:label="Create Post" />
     </application>
 
 </manifest>

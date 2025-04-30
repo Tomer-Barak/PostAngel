@@ -18,6 +18,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.documentfile.provider.DocumentFile
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -44,6 +45,59 @@ class KnowledgeBaseActivity : AppCompatActivity() {    companion object {
     ) { uri: Uri? ->
         if (uri != null) {
             handleSelectedFile(uri)
+        }
+    }
+    
+    // Folder picker launcher
+    private val folderPickerLauncher = registerForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri ->
+        uri?.let {
+            handleSelectedFolder(it)
+        }
+    }
+
+    private fun handleSelectedFolder(uri: Uri) {
+        val docTreeUri = DocumentFile.fromTreeUri(this, uri) ?: return
+        var importedCount = 0
+        var errorCount = 0
+
+        docTreeUri.listFiles().forEach { file ->
+            if (!file.isFile) return@forEach
+
+            val name = file.name ?: return@forEach
+            val isTextFile = name.endsWith(".txt", true) || name.endsWith(".md", true)
+                    || file.type?.startsWith("text/") == true
+
+            if (isTextFile) {
+                try {
+                    contentResolver.openInputStream(file.uri)?.use { input ->
+                        val destinationFile = File(topicsDir, name)
+                        FileOutputStream(destinationFile).use { output ->
+                            input.copyTo(output)
+                        }
+                        importedCount++
+                    }
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error importing file: ${file.name}", e)
+                    errorCount++
+                }
+            }
+        }
+
+        // Show result to user
+        val message = when {
+            importedCount > 0 && errorCount == 0 -> 
+                "Successfully imported $importedCount files"
+            importedCount > 0 && errorCount > 0 -> 
+                "Imported $importedCount files. Failed to import $errorCount files."
+            errorCount > 0 -> 
+                "Failed to import $errorCount files."
+            else -> 
+                "No text files found in the selected folder"
+        }
+        
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+        if (importedCount > 0) {
+            loadTopics() // Refresh the list if we imported any files
         }
     }
     
@@ -273,26 +327,26 @@ class KnowledgeBaseActivity : AppCompatActivity() {    companion object {
             Toast.makeText(this, "Error deleting topic: ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }    private fun importFilesFromStorage() {
-        // For Android 13+ (Tiramisu), we don't need specific permission when using the Storage Access Framework
-        // It's designed to handle user-selected files without needing permissions
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            openFilePicker()
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            // For Android 6.0 - 12, we need READ_EXTERNAL_STORAGE
-            val permission = android.Manifest.permission.READ_EXTERNAL_STORAGE
-            if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(
-                    this,
-                    arrayOf(permission),
-                    PERMISSION_REQUEST_READ_EXTERNAL_STORAGE
-                )
-            } else {
-                openFilePicker()
+        // Show a dialog to choose between different import options
+        AlertDialog.Builder(this)
+            .setTitle("Import Options")
+            .setItems(arrayOf("Select Text Files", "Select Folder", "Select Any File")) { _, which ->
+                when (which) {
+                    0 -> {
+                        // For text files only
+                        filePickerLauncher.launch("text/*")
+                    }
+                    1 -> {
+                        // For folder selection - requires ACTION_OPEN_DOCUMENT_TREE
+                        folderPickerLauncher.launch(null)
+                    }
+                    2 -> {
+                        // For all files - we'll filter for supported types later
+                        filePickerLauncher.launch("*/*")
+                    }
+                }
             }
-        } else {
-            // For Android 5.1 and below, no runtime permissions needed
-            openFilePicker()
-        }
+            .show()
     }    private fun openFilePicker() {
         // Create a string array of MIME types that can be selected
         val mimeTypes = arrayOf(
