@@ -50,9 +50,11 @@
     <string name="copy_post">Copy Post</string>
     <string name="create_post_title">Create Social Media Post</string>
     <string name="select_topic">Select Topic</string>
-    <string name="generating_post">Generating post...</string>
-    <string name="post_copied">Post copied to clipboard</string>
+    <string name="generating_post">Generating post...</string>    <string name="post_copied">Post copied to clipboard</string>
     <string name="tweet_format">TWEET: Check out this topic! %1$s #PostMuse\n%2$s</string>
+    
+    <!-- Refresh feature -->
+    <string name="refresh_response">Try Another Response</string>
     
     <!-- Dark Mode -->
     <string name="dark_mode">Dark Mode</string>
