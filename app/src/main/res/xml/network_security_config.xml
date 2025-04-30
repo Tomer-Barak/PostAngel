@@ -6,14 +6,9 @@
             <certificates src="system" />
             <certificates src="user" />
         </trust-anchors>
-    </base-config>
-      <!-- Allow cleartext for localhost and development servers -->
+    </base-config>    <!-- Allow cleartext only for essential loopback testing -->
     <domain-config cleartextTrafficPermitted="true">
         <domain includeSubdomains="true">localhost</domain>
-        <domain includeSubdomains="true">10.0.2.2</domain> <!-- Android emulator localhost -->
-        <domain includeSubdomains="true">192.168.1.0/24</domain> <!-- Local network -->
-        <domain includeSubdomains="true">127.0.0.1</domain>
-        <domain includeSubdomains="true">rp</domain> <!-- Development server -->
-        <domain includeSubdomains="true">tomer-laptop</domain> <!-- Development server -->
+        <!-- All specific IP addresses removed for security in release version -->
     </domain-config>
 </network-security-config>

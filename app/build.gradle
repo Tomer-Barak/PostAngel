@@ -13,13 +13,12 @@ if (keystorePropertiesFile.exists()) {
 android {
     namespace 'com.postmuse.screenshare'
     compileSdk 34
-    
-    defaultConfig {          
+      defaultConfig {          
         applicationId "com.postmuse.screenshare"        
         minSdk 26
         targetSdk 34
         versionCode 3
-        versionName "1.0.4"
+        versionName "1.0.5"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
