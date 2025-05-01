@@ -48,10 +48,11 @@
     <string name="learn_about_security">Learn about API key security</string>   
     <string name="create_post">Create Post</string>
     <string name="generate_post">Generate Post</string>
-    <string name="copy_post">Copy Post</string>
+    <string name="copy_post">Copy</string>
     <string name="create_post_title">Create Social Media Post</string>
     <string name="select_topic">Select Topic</string>
-    <string name="generating_post">Generating post...</string>    <string name="post_copied">Post copied to clipboard</string>
+    <string name="generating_post">Generating post...</string>
+    <string name="post_copied">Post copied to clipboard</string>
     <string name="tweet_format">TWEET: Check out this topic! %1$s #PostAngel\n%2$s</string>
     
     <!-- Refresh feature -->
@@ -61,8 +62,24 @@
     <string name="dark_mode">Dark Mode / PostDemon</string>
     <string name="dark_mode_description">Enable dark theme and PostDemon mode</string>
     <string name="appearance">Appearance</string>
-    
-    <!-- App Mode Strings -->
+      <!-- App Mode Strings -->
     <string name="mode_angel">PostAngel</string>
     <string name="mode_demon">PostDemon</string>
+    
+    <!-- Mode Toggle Button -->    
+    <string name="analyze_with_angel">Analyze with PostAngel</string>
+    <string name="analyze_with_demon">Analyze with PostDemon</string>
+    
+    <!-- Post History Strings -->
+    <string name="post_history">Post History</string>
+    <string name="post_history_button">History</string>
+    <string name="no_posts_in_history">No posts in history</string>
+    <string name="clear_all_history">Clear All</string>
+    <!-- Removed duplicate copy_post string -->
+    <string name="delete_post">Delete</string>
+    <string name="post_deleted">Post deleted</string>
+    <string name="history_cleared">History cleared</string>
+    <string name="created_with">Created with %s</string>
+    <string name="source_share">From shared post</string>
+    <string name="source_create">Created manually</string>
 </resources>

@@ -3,7 +3,7 @@
     <!-- Night application theme -->
     <style name="Theme.PostAngel" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <!-- Primary brand color -->
-        <item name="colorPrimary">@color/primary_night</item>
+        <item name="colorPrimary">@color/accent_night</item>
         <item name="colorPrimaryVariant">@color/primary_dark_night</item>
         <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color -->

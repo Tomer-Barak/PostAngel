@@ -58,12 +58,17 @@
             android:name=".TopicEditorActivity"
             android:exported="false"
             android:label="Edit Topic" />
-            
-        <!-- Create Post activity -->
+              <!-- Create Post activity -->
         <activity
             android:name=".CreatePostActivity"
             android:exported="false"
             android:label="Create Post" />
+            
+        <!-- Post History activity -->
+        <activity
+            android:name=".PostHistoryActivity"
+            android:exported="false"
+            android:label="@string/post_history" />
     </application>
 
 </manifest>

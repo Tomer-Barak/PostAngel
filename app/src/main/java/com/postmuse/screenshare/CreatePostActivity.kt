@@ -18,6 +18,9 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
 import java.io.File
 import java.io.IOException
+import com.postangel.screenshare.ModeHelper
+import com.postangel.screenshare.PostHistoryEntry
+import com.postangel.screenshare.PostHistoryManager
 
 class CreatePostActivity : AppCompatActivity() {    
     private lateinit var topicSpinner: Spinner
@@ -132,11 +135,27 @@ class CreatePostActivity : AppCompatActivity() {
                 }
 
                 val generatedPost = generatePromotionalTweet(apiKey, topic, topicContent, specialInstructions)
-                
-                withContext(Dispatchers.Main) {
+                  withContext(Dispatchers.Main) {
                     if (generatedPost != null) {
+                        // Display the generated post
                         generatedPostView.text = generatedPost
                         copyButton.visibility = View.VISIBLE
+                        
+                        // Save post to history with current mode and source
+                        val isDarkMode = ModeHelper.isDarkModeActive(this@CreatePostActivity)
+                        PostHistoryManager.savePost(
+                            context = this@CreatePostActivity,
+                            content = generatedPost,
+                            isDarkMode = isDarkMode,
+                            source = PostHistoryEntry.SOURCE_CREATE
+                        )
+                        
+                        // Show a toast confirming post was saved to history
+                        Toast.makeText(
+                            this@CreatePostActivity, 
+                            "Post saved to history", 
+                            Toast.LENGTH_SHORT
+                        ).show()
                     } else {
                         showError("Failed to generate post")
                     }
@@ -181,8 +200,7 @@ class CreatePostActivity : AppCompatActivity() {
         
         // Get appropriate system prompt based on current mode (angel/demon)
         val systemPrompt = ModeHelper.getPostGenerationSystemPrompt(this)
-
-        val jsonPayload = JSONObject().apply {
+            val jsonPayload = JSONObject().apply {
             put("model", "gpt-4o-mini")
             put("messages", org.json.JSONArray().apply {
                 put(JSONObject().apply {
@@ -194,7 +212,7 @@ class CreatePostActivity : AppCompatActivity() {
                     put("content", prompt)
                 })
             })
-            put("max_tokens", 80)
+            put("max_tokens", 300)
             put("temperature", 0.7)
         }
 
@@ -216,17 +234,10 @@ class CreatePostActivity : AppCompatActivity() {
                     if (choices.length() > 0) {
                         val content = choices.getJSONObject(0)
                             .getJSONObject("message")
-                            .getString("content")
-
-                        // Extract tweet from the response
+                            .getString("content")                        // Extract tweet from the response
                         val tweetPattern = "TWEET: (.+)".toRegex(RegexOption.DOT_MATCHES_ALL)
                         val tweetMatch = tweetPattern.find(content)
-                        var tweet = tweetMatch?.groupValues?.get(1)?.trim() ?: content.trim()
-
-                        // Ensure tweet is within character limit
-                        if (tweet.length > 280) {
-                            tweet = tweet.take(277) + "..."
-                        }
+                        val tweet = tweetMatch?.groupValues?.get(1)?.trim() ?: content.trim()
                         
                         tweet
                     } else {
@@ -250,8 +261,7 @@ class CreatePostActivity : AppCompatActivity() {
         } else {
             ""
         }
-        
-        val basePrompt = """
+          val basePrompt = """
             You are creating a social media post to promote a specific topic.
             
             Your task:
@@ -288,5 +298,5 @@ class CreatePostActivity : AppCompatActivity() {
             copyButton.visibility = View.GONE
             Toast.makeText(this@CreatePostActivity, message, Toast.LENGTH_LONG).show()
         }
-    }
+    }    // Menu options removed as history is now accessible from the main activity
 }
