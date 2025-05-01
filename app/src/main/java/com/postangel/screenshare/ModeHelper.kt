@@ -6,13 +6,16 @@ import androidx.appcompat.app.AppCompatDelegate
 /**
  * Helper class for handling app mode changes between PostAngel (light mode) and PostDemon (dark mode)
  */
-object ModeHelper {
-
-    /**
+object ModeHelper {    /**
      * Check if the app is currently in dark mode (PostDemon mode)
+     * Takes into account temporary mode settings
      */
     fun isDarkModeActive(context: Context): Boolean {
-        return PrefsUtil.isDarkModeEnabled(context)
+        return if (TemporaryModeManager.isUsingTemporaryMode()) {
+            TemporaryModeManager.getCurrentMode(context)
+        } else {
+            PrefsUtil.isDarkModeEnabled(context)
+        }
     }
 
     /**

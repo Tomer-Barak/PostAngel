@@ -15,19 +15,17 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
+        app:layout_constraintTop_toTopOf="parent" />    
     <ScrollView
         android:id="@+id/scrollView"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:padding="16dp"
-        app:layout_constraintBottom_toTopOf="@+id/copyButton"
+        app:layout_constraintBottom_toTopOf="@+id/refreshButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginBottom="8dp">
-
         <TextView
             android:id="@+id/statusTextView"
             android:layout_width="match_parent"
@@ -35,33 +33,41 @@
             android:text="Receiving screenshot..."
             android:textAlignment="textStart"
             android:textSize="16sp" />
-    </ScrollView>    
-    <Button
-        android:id="@+id/copyButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Copy Response"
-        android:visibility="gone" 
-        app:layout_constraintHorizontal_chainStyle="packed"
-        app:layout_constraintTop_toBottomOf="@+id/scrollView"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/refreshButton"
-        app:layout_constraintBottom_toTopOf="@+id/closeButton"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"/>
-
-    <Button
+        </ScrollView>          
+        <Button
         android:id="@+id/refreshButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/refresh_response"
         android:visibility="gone"
         app:layout_constraintTop_toBottomOf="@+id/scrollView" 
-        app:layout_constraintStart_toEndOf="@+id/copyButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/copyButton"
+        android:layout_marginBottom="8dp"/>
+          <Button
+        android:id="@+id/copyButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Copy Response"
+        android:visibility="gone" 
+        app:layout_constraintTop_toBottomOf="@+id/refreshButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/toggleModeButton"
+        android:layout_marginBottom="8dp"/>
+        
+    <Button
+        android:id="@+id/toggleModeButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Analyze with PostAngel"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@+id/copyButton" 
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@+id/closeButton"
-        android:layout_marginBottom="8dp"
-        android:layout_marginStart="8dp"/>
+        android:layout_marginBottom="8dp"/>
 
     <Button
         android:id="@+id/closeButton"

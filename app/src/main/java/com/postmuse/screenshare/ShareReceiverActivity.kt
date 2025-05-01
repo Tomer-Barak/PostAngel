@@ -11,6 +11,7 @@ import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.ProgressBar
+import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -28,20 +29,26 @@ import java.io.File
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.io.IOException
+import com.postangel.screenshare.PostHistoryEntry
+import com.postangel.screenshare.PostHistoryManager
 
 class ShareReceiverActivity : AppCompatActivity() {
     
     private lateinit var statusTextView: TextView
     private lateinit var progressBar: ProgressBar
     private lateinit var closeButton: Button
-    private lateinit var copyButton: Button
+    private lateinit var copyButton: Button    
     private lateinit var refreshButton: Button // Added refresh button
+    private lateinit var toggleModeButton: Button // Added toggle mode button
     
     private val TAG = "ShareReceiverActivity"
     
     // Cache extracted content for refresh functionality
     private var cachedExtractedContent: String? = null
     private var cachedKnowledgeBase: String? = null
+    
+    // Flag to track if we're using an alternate mode for the current analysis
+    private var usingAlternateMode = false
     
     companion object {
         const val TOPICS_DIR_NAME = "Topics" // Directory for knowledge base
@@ -55,15 +62,17 @@ class ShareReceiverActivity : AppCompatActivity() {
             getString(R.string.share_receiver_name_demon)
         } else {
             getString(R.string.share_receiver_name)
-        }
+        }        
         statusTextView = findViewById(R.id.statusTextView)
         progressBar = findViewById(R.id.progressBar)
         closeButton = findViewById(R.id.closeButton)
         copyButton = findViewById(R.id.copyButton)
         refreshButton = findViewById(R.id.refreshButton) // Initialize refresh button
+        toggleModeButton = findViewById(R.id.toggleModeButton) // Initialize toggle mode button
         
         copyButton.visibility = View.GONE // Initially hide copy button
         refreshButton.visibility = View.GONE // Initially hide refresh button
+        toggleModeButton.visibility = View.GONE // Initially hide toggle mode button
         
         closeButton.setOnClickListener {
             finish()
@@ -83,9 +92,14 @@ class ShareReceiverActivity : AppCompatActivity() {
             }
             Toast.makeText(this, toastMessage, Toast.LENGTH_SHORT).show()
         }
-        
-        refreshButton.setOnClickListener {
+          refreshButton.setOnClickListener {
             refreshResponse()
+        }
+        
+        // Set toggle mode button text and click listener
+        updateToggleModeButtonText()
+        toggleModeButton.setOnClickListener {
+            toggleAnalysisMode()
         }
         
         // Handle the intent
@@ -194,8 +208,7 @@ class ShareReceiverActivity : AppCompatActivity() {
             }
             return
         }
-              withContext(Dispatchers.Main) {
-            // Update status message based on current mode
+              withContext(Dispatchers.Main) {            // Update status message based on current mode
             val statusMessage = if (ModeHelper.isDarkModeActive(this@ShareReceiverActivity)) {
                 "Analyzing post content with PostDemon..." 
             } else {
@@ -205,6 +218,10 @@ class ShareReceiverActivity : AppCompatActivity() {
             progressBar.visibility = View.VISIBLE
             copyButton.visibility = View.GONE // Hide copy button during processing
             refreshButton.visibility = View.GONE // Hide refresh button during processing
+            toggleModeButton.visibility = View.GONE // Hide toggle mode button during processing
+            
+            // Set the background color according to the current mode
+            setResponseBackgroundForCurrentMode()
         }
             
         // Read file as base64
@@ -236,11 +253,12 @@ class ShareReceiverActivity : AppCompatActivity() {
             cachedKnowledgeBase = knowledgeBase
             
             if (knowledgeBase.isBlank()) {
-                withContext(Dispatchers.Main) {
+                withContext(Dispatchers.Main) {                    
                     statusTextView.text = "No topics found in your knowledge base. Please add topic files (.txt or .md) to the \"${TOPICS_DIR_NAME}\" folder."
                     progressBar.visibility = View.GONE
                     copyButton.visibility = View.GONE
                     refreshButton.visibility = View.GONE
+                    toggleModeButton.visibility = View.GONE // Hide toggle mode button when no topics
                 }
                 return
             }
@@ -263,13 +281,31 @@ class ShareReceiverActivity : AppCompatActivity() {
                 // Extract topic name for UI display
                 val topicPattern = "Topic: ([^\\n]+)".toRegex()
                 val topicMatch = topicPattern.find(relevantContext)
-                val topicName = topicMatch?.groupValues?.get(1) ?: "a relevant topic"
-                  withContext(Dispatchers.Main) {
-                    // Format the final output with some context
-                    statusTextView.text = "Response suggestion based on \"$topicName\":\n\n$suggestedResponse" 
+                val topicName = topicMatch?.groupValues?.get(1) ?: "a relevant topic"                  
+                withContext(Dispatchers.Main) {                    // Format the final output with some context
+                    val formattedResponse = "Response suggestion based on \"$topicName\":\n\n$suggestedResponse"
+                    statusTextView.text = formattedResponse
                     progressBar.visibility = View.GONE
                     copyButton.visibility = View.VISIBLE // Show copy button
                     refreshButton.visibility = View.VISIBLE // Show refresh button when we have a response
+                    toggleModeButton.visibility = View.VISIBLE // Show toggle mode button
+                    setResponseBackgroundForCurrentMode() // Set background color based on mode
+                    
+                    // Save response to post history
+                    val isDarkMode = ModeHelper.isDarkModeActive(this@ShareReceiverActivity)
+                    PostHistoryManager.savePost(
+                        context = this@ShareReceiverActivity,
+                        content = suggestedResponse,
+                        isDarkMode = isDarkMode,
+                        source = PostHistoryEntry.SOURCE_SHARE
+                    )
+                    
+                    // Show a toast confirming post was saved to history
+                    Toast.makeText(
+                        this@ShareReceiverActivity, 
+                        "Response saved to history", 
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             } else {                // No opportunity found
                 withContext(Dispatchers.Main) {
@@ -277,11 +313,13 @@ class ShareReceiverActivity : AppCompatActivity() {
                         "Nothing worth responding to with sarcasm found. Better luck next time."
                     } else {
                         "No relevant response opportunity found based on your topics."
-                    }
+                    }                    
                     statusTextView.text = noOpportunityMessage
                     progressBar.visibility = View.GONE
                     copyButton.visibility = View.GONE
                     refreshButton.visibility = View.GONE
+                    toggleModeButton.visibility = View.VISIBLE // Show toggle mode button even if no opportunity found
+                    setResponseBackgroundForCurrentMode() // Set background color based on mode
                 }
             }
             
@@ -586,7 +624,7 @@ class ShareReceiverActivity : AppCompatActivity() {
             IDEA: [Your response idea if OPPORTUNITY is YES, otherwise leave blank]
             
             Keep in mind:
-            - The response should feel natural and relevant to the original post
+            - The response should feel natural and relevant to the original post (don't force it)
             - The promotion should be subtle and not forced
             - The response should be respectful and professional
             """
@@ -690,13 +728,14 @@ class ShareReceiverActivity : AppCompatActivity() {
         
     // Fallback response if generation fails
         return "Based on the topic \"$topicName\", you could respond to this post. (Note: Response generation failed; please try again.)"
-    }
-    // This function must be inside the class, just before the final closing brace
+    }    // This function must be inside the class, just before the final closing brace
     private suspend fun showError(message: String) {
         withContext(Dispatchers.Main) {
             statusTextView.text = message // Show error message
             progressBar.visibility = View.GONE            
             copyButton.visibility = View.GONE // Hide copy button on error
+            refreshButton.visibility = View.GONE // Hide refresh button on error
+            toggleModeButton.visibility = View.GONE // Hide toggle mode button on error
             
             // Mode-specific error toast
             val errorToast = if (ModeHelper.isDarkModeActive(this@ShareReceiverActivity)) {
@@ -782,14 +821,29 @@ class ShareReceiverActivity : AppCompatActivity() {
                     val topicPattern = "Topic: ([^\\n]+)".toRegex()
                     val topicMatch = topicPattern.find(relevantContext)
                     val topicName = topicMatch?.groupValues?.get(1) ?: "a relevant topic"
-                    
-                    // Update UI
+                      // Update UI
                     withContext(Dispatchers.Main) {
                         statusTextView.text = "Response suggestion based on \"$topicName\":\n\n$suggestedResponse"
                         progressBar.visibility = View.GONE
                         copyButton.visibility = View.VISIBLE
                         refreshButton.visibility = View.VISIBLE
-                    }                } else {
+                        
+                        // Save refreshed response to post history
+                        val isDarkMode = ModeHelper.isDarkModeActive(this@ShareReceiverActivity)
+                        PostHistoryManager.savePost(
+                            context = this@ShareReceiverActivity,
+                            content = suggestedResponse,
+                            isDarkMode = isDarkMode,
+                            source = PostHistoryEntry.SOURCE_SHARE
+                        )
+                        
+                        // Show a toast confirming post was saved to history
+                        Toast.makeText(
+                            this@ShareReceiverActivity, 
+                            "Response saved to history", 
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }} else {
                     // No new opportunity found
                     withContext(Dispatchers.Main) {
                         val noOpportunityMsg = if (ModeHelper.isDarkModeActive(this@ShareReceiverActivity)) {
@@ -818,6 +872,174 @@ class ShareReceiverActivity : AppCompatActivity() {
             getString(R.string.share_receiver_name_demon)
         } else {
             getString(R.string.share_receiver_name)
+        }
+    }
+    
+    /**
+     * Updates the toggle mode button text based on the current mode
+     */
+    private fun updateToggleModeButtonText() {
+        val currentMode = ModeHelper.isDarkModeActive(this)
+        if (currentMode) {
+            // Currently in dark mode, show option for light mode
+            toggleModeButton.text = getString(R.string.analyze_with_angel)
+        } else {
+            // Currently in light mode, show option for dark mode
+            toggleModeButton.text = getString(R.string.analyze_with_demon)
+        }
+    }
+    
+    /**
+     * Toggles between light (PostAngel) and dark (PostDemon) modes for the current analysis
+     * without affecting the app's global setting
+     */
+    private fun toggleAnalysisMode() {
+        if (cachedExtractedContent.isNullOrBlank() || cachedKnowledgeBase.isNullOrBlank()) {
+            val errorMsg = if (ModeHelper.isDarkModeActive(this)) {
+                "Can't switch modes without content to analyze. Do better next time."
+            } else {
+                "Unable to switch modes. No content to analyze."
+            }
+            Toast.makeText(this, errorMsg, Toast.LENGTH_SHORT).show()
+            return
+        }
+        
+        // Toggle to temporary mode
+        val isDarkMode = TemporaryModeManager.toggleTemporaryMode(this)
+        usingAlternateMode = true
+        
+        // Update UI elements for the new mode
+        updateToggleModeButtonText()
+        setResponseBackgroundForCurrentMode()
+        
+        // Show processing UI
+        progressBar.visibility = View.VISIBLE
+        val modeChangeMsg = if (isDarkMode) {
+            "Switching to PostDemon mode for sarcastic analysis..."
+        } else {
+            "Switching to PostAngel mode for helpful analysis..."
+        }
+        statusTextView.text = modeChangeMsg
+        copyButton.visibility = View.GONE
+        
+        // Get API key
+        val apiKey = SecureKeyStore.getOpenAIApiKey(this)
+        if (apiKey.isEmpty()) {
+            lifecycleScope.launch {
+                showError("API key required for generating responses")
+            }
+            return
+        }
+        
+        // Launch coroutine to generate new response with the alternate mode
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val client = OkHttpClient.Builder()
+                    .followSslRedirects(true)
+                    .followRedirects(true)
+                    .build()
+                
+                // Find an opportunity with the alternate mode
+                val relevantContext = evaluateOpportunity(
+                    client, 
+                    apiKey, 
+                    cachedExtractedContent!!, 
+                    cachedKnowledgeBase!!
+                )
+                
+                if (relevantContext != null) {
+                    withContext(Dispatchers.Main) {
+                        val msg = if (isDarkMode) {
+                            "Found the perfect opening for sarcasm! Crafting response..."
+                        } else {
+                            "Found a relevant opportunity! Generating helpful response..."
+                        }
+                        statusTextView.text = msg
+                    }
+                    
+                    // Generate new response
+                    val suggestedResponse = generateResponse(
+                        client, 
+                        apiKey, 
+                        cachedExtractedContent!!, 
+                        relevantContext
+                    )
+                    
+                    // Extract topic name for display
+                    val topicPattern = "Topic: ([^\\n]+)".toRegex()
+                    val topicMatch = topicPattern.find(relevantContext)
+                    val topicName = topicMatch?.groupValues?.get(1) ?: "a relevant topic"
+                      // Update UI
+                    withContext(Dispatchers.Main) {
+                        statusTextView.text = "Response suggestion based on \"$topicName\":\n\n$suggestedResponse"
+                        progressBar.visibility = View.GONE
+                        copyButton.visibility = View.VISIBLE
+                        refreshButton.visibility = View.VISIBLE
+                        toggleModeButton.visibility = View.VISIBLE
+                        setResponseBackgroundForCurrentMode()
+                        
+                        // Save toggled mode response to post history
+                        val isDarkMode = ModeHelper.isDarkModeActive(this@ShareReceiverActivity)
+                        PostHistoryManager.savePost(
+                            context = this@ShareReceiverActivity,
+                            content = suggestedResponse,
+                            isDarkMode = isDarkMode,
+                            source = PostHistoryEntry.SOURCE_SHARE
+                        )
+                        
+                        // Show a toast confirming post was saved to history
+                        Toast.makeText(
+                            this@ShareReceiverActivity, 
+                            "Response saved to history", 
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                } else {
+                    // No opportunity found
+                    withContext(Dispatchers.Main) {
+                        val noOpportunityMsg = if (isDarkMode) {
+                            "Sorry, can't find anything worth mocking in this content."
+                        } else {
+                            "No relevant response opportunities found."
+                        }
+                        statusTextView.text = noOpportunityMsg
+                        progressBar.visibility = View.GONE
+                        copyButton.visibility = View.GONE
+                        refreshButton.visibility = View.GONE
+                        toggleModeButton.visibility = View.VISIBLE
+                        // Reset to original mode if we can't find an opportunity
+                        TemporaryModeManager.clearTemporaryMode()
+                        updateToggleModeButtonText()
+                        setResponseBackgroundForCurrentMode()
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error generating response with alternate mode", e)
+                lifecycleScope.launch {
+                    showError("Error generating response: ${e.message}")
+                    // Reset to original mode on error
+                    TemporaryModeManager.clearTemporaryMode()
+                    updateToggleModeButtonText()
+                    setResponseBackgroundForCurrentMode()
+                }
+            }
+        }
+    }
+    
+    /**
+     * Sets the background color of the response text view based on the current mode
+     */
+    private fun setResponseBackgroundForCurrentMode() {
+        val scrollView = findViewById<ScrollView>(R.id.scrollView)
+        val isDarkMode = ModeHelper.isDarkModeActive(this)
+          if (isDarkMode) {
+            // Dark mode (PostDemon)
+            scrollView.setBackgroundColor(resources.getColor(R.color.background_dark, theme))
+            statusTextView.setTextColor(resources.getColor(R.color.on_background_dark, theme))
+        } else {
+            // Light mode (PostAngel)
+            scrollView.setBackgroundColor(resources.getColor(R.color.background_light, theme))
+            statusTextView.setTextColor(resources.getColor(R.color.on_background, theme))
         }
     }
 }

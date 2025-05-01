@@ -47,7 +47,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         android:layout_marginTop="16dp"
         android:layout_marginLeft="32dp"/>    
-        <EditText
+    <EditText
         android:id="@+id/specialInstructionsEditText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -56,6 +56,8 @@
         android:gravity="top"
         android:inputType="textMultiLine"
         android:background="@drawable/edit_text_border"
+        android:textColor="?android:attr/textColorPrimary"
+        android:textColorHint="?android:attr/textColorHint"
         app:layout_constraintTop_toBottomOf="@id/specialInstructionsLabel"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
