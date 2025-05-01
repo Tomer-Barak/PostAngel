@@ -11,10 +11,10 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    namespace 'com.postmuse.screenshare'
+    namespace 'com.postangel.screenshare'
     compileSdk 34
       defaultConfig {          
-        applicationId "com.postmuse.screenshare"        
+        applicationId "com.postangel.screenshare"        
         minSdk 26
         targetSdk 34
         versionCode 3

@@ -44,7 +44,7 @@
                 android:contentDescription="@string/api_key_security_info" />
         </LinearLayout>
 
-        <com.postmuse.screenshare.SecureApiKeyEditText
+        <com.postangel.screenshare.SecureApiKeyEditText
             android:id="@+id/secureApiKeyEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />

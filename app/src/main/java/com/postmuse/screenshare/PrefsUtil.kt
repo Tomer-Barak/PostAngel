@@ -1,10 +1,10 @@
-package com.postmuse.screenshare
+package com.postangel.screenshare
 
 import android.content.Context
 import android.content.SharedPreferences
 
 object PrefsUtil {    
-    private const val PREFS_NAME = "PostMusePrefs"
+    private const val PREFS_NAME = "PostAngelPrefs"
     private const val KEY_SERVER_URL = "server_url"
     private const val DEFAULT_SERVER_URL = "https://api.openai.com/v1/chat/completions" // OpenAI API URL
     private const val KEY_OPENAI_API_KEY = "openai_api_key"

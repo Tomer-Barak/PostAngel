@@ -1,4 +1,4 @@
-package com.postmuse.screenshare
+package com.postangel.screenshare
 
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -46,11 +46,16 @@ class ShareReceiverActivity : AppCompatActivity() {
     companion object {
         const val TOPICS_DIR_NAME = "Topics" // Directory for knowledge base
     }
-    
-    override fun onCreate(savedInstanceState: Bundle?) {
+      override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_share_receiver)
         
+        // Set activity title based on current mode
+        title = if (ModeHelper.isDarkModeActive(this)) {
+            getString(R.string.share_receiver_name_demon)
+        } else {
+            getString(R.string.share_receiver_name)
+        }
         statusTextView = findViewById(R.id.statusTextView)
         progressBar = findViewById(R.id.progressBar)
         closeButton = findViewById(R.id.closeButton)
@@ -63,13 +68,20 @@ class ShareReceiverActivity : AppCompatActivity() {
         closeButton.setOnClickListener {
             finish()
         }
-        
         copyButton.setOnClickListener {
             // Copy the text from statusTextView to clipboard
             val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            val clip = ClipData.newPlainText("PostMuse Response", statusTextView.text)
+            val clipLabel = ModeHelper.getAppName(this) + " Response"
+            val clip = ClipData.newPlainText(clipLabel, statusTextView.text)
             clipboard.setPrimaryClip(clip)
-            Toast.makeText(this, "Response copied to clipboard", Toast.LENGTH_SHORT).show()
+            
+            // Show toast message based on current mode
+            val toastMessage = if (ModeHelper.isDarkModeActive(this)) {
+                "Sarcastic response copied and ready to unleash"
+            } else {
+                "Response copied to clipboard"
+            }
+            Toast.makeText(this, toastMessage, Toast.LENGTH_SHORT).show()
         }
         
         refreshButton.setOnClickListener {
@@ -100,7 +112,7 @@ class ShareReceiverActivity : AppCompatActivity() {
             lifecycleScope.launch {
                 showError(getString(R.string.api_key_required))
             }
-            Toast.makeText(this, "Please set your OpenAI API key in settings", Toast.LENGTH_LONG).show()            // Open settings so user can set API key
+            Toast.makeText(this, "Please set your OpenAI API key in settings", Toast.LENGTH_LONG).show()            // Open settings so user can set API Key
             val settingsIntent = Intent(this, SettingsActivity::class.java)
             startActivity(settingsIntent)
             return
@@ -182,9 +194,14 @@ class ShareReceiverActivity : AppCompatActivity() {
             }
             return
         }
-            
-        withContext(Dispatchers.Main) {
-            statusTextView.text = "Extracting post content..." // Update status
+              withContext(Dispatchers.Main) {
+            // Update status message based on current mode
+            val statusMessage = if (ModeHelper.isDarkModeActive(this@ShareReceiverActivity)) {
+                "Analyzing post content with PostDemon..." 
+            } else {
+                "Extracting post content..."
+            }
+            statusTextView.text = statusMessage
             progressBar.visibility = View.VISIBLE
             copyButton.visibility = View.GONE // Hide copy button during processing
             refreshButton.visibility = View.GONE // Hide refresh button during processing
@@ -205,7 +222,13 @@ class ShareReceiverActivity : AppCompatActivity() {
                 statusTextView.text = "Evaluating opportunity..." // Update status
             }            // Stage 2: Evaluate opportunity based on knowledge base
             withContext(Dispatchers.Main) {
-                statusTextView.text = "Evaluating for potential response opportunities..." // Update status
+                // Update status message based on current mode
+                val statusMessage = if (ModeHelper.isDarkModeActive(this@ShareReceiverActivity)) {
+                    "Looking for ways to be cleverly contradictory..."
+                } else {
+                    "Evaluating for potential response opportunities..."
+                }
+                statusTextView.text = statusMessage
             }
               val knowledgeBase = readKnowledgeBase()
             
@@ -223,10 +246,16 @@ class ShareReceiverActivity : AppCompatActivity() {
             }
             
             val relevantContext = evaluateOpportunity(client, apiKey, extractedContent, knowledgeBase)
-
+            
             if (relevantContext != null) {
                 withContext(Dispatchers.Main) {
-                    statusTextView.text = "Found relevant topic! Generating response..." // Update status
+                    // Update message based on current mode
+                    val statusMessage = if (ModeHelper.isDarkModeActive(this@ShareReceiverActivity)) {
+                        "Perfect opportunity found! Crafting sarcastic response..."
+                    } else {
+                        "Found relevant topic! Generating response..."
+                    }
+                    statusTextView.text = statusMessage
                 }
                 // Stage 3: Generate response if opportunity exists
                 val suggestedResponse = generateResponse(client, apiKey, extractedContent, relevantContext)
@@ -235,18 +264,21 @@ class ShareReceiverActivity : AppCompatActivity() {
                 val topicPattern = "Topic: ([^\\n]+)".toRegex()
                 val topicMatch = topicPattern.find(relevantContext)
                 val topicName = topicMatch?.groupValues?.get(1) ?: "a relevant topic"
-                
-                withContext(Dispatchers.Main) {
+                  withContext(Dispatchers.Main) {
                     // Format the final output with some context
                     statusTextView.text = "Response suggestion based on \"$topicName\":\n\n$suggestedResponse" 
                     progressBar.visibility = View.GONE
                     copyButton.visibility = View.VISIBLE // Show copy button
                     refreshButton.visibility = View.VISIBLE // Show refresh button when we have a response
                 }
-            } else {
-                // No opportunity found
+            } else {                // No opportunity found
                 withContext(Dispatchers.Main) {
-                    statusTextView.text = "No relevant response opportunity found based on your topics."
+                    val noOpportunityMessage = if (ModeHelper.isDarkModeActive(this@ShareReceiverActivity)) {
+                        "Nothing worth responding to with sarcasm found. Better luck next time."
+                    } else {
+                        "No relevant response opportunity found based on your topics."
+                    }
+                    statusTextView.text = noOpportunityMessage
                     progressBar.visibility = View.GONE
                     copyButton.visibility = View.GONE
                     refreshButton.visibility = View.GONE
@@ -454,7 +486,7 @@ class ShareReceiverActivity : AppCompatActivity() {
             put("messages", org.json.JSONArray().apply {
                 put(JSONObject().apply {
                     put("role", "system")
-                    put("content", "You are a social media assistant analyzing posts for promotional opportunities.")
+                    put("content", ModeHelper.getAnalysisSystemPrompt(this@ShareReceiverActivity))
                 })
                 put(JSONObject().apply {
                     put("role", "user")
@@ -516,10 +548,31 @@ class ShareReceiverActivity : AppCompatActivity() {
         
         return Pair(false, null)
     }
-    
-    // Construct prompt for analysis (similar to _construct_analysis_prompt in twitter_agent.py)
+      // Construct prompt for analysis (similar to _construct_analysis_prompt in twitter_agent.py)    
     private fun constructAnalysisPrompt(postContent: String, topic: String, topicDescription: String): String {
-        val instructions = """
+        val isDarkMode = ModeHelper.isDarkModeActive(this)
+        
+        val baseInstructions = if (isDarkMode) {
+            """
+            You are analyzing a social media post to determine if there's an opportunity to respond with a sarcastic, contradictory tone while subtly relating to a specific topic.
+            
+            Your task:
+            1. Analyze the content of the post.
+            2. Determine if there's a clever way to respond to this post with wit and subtle contradiction.
+            3. If there is, provide a brief idea for a response that incorporates the topic with sarcasm.
+            4. If there isn't a good opportunity, indicate this clearly.
+            
+            Your response should be formatted as:
+            OPPORTUNITY: [YES/NO]
+            IDEA: [Your response idea if OPPORTUNITY is YES, otherwise leave blank]
+            
+            Keep in mind:
+            - The response should feel clever and subtly contradictory to the original post
+            - The sarcasm should be witty, not mean-spirited
+            - The response should be amusing and mildly cynical
+            """
+        } else {
+            """
             You are analyzing a social media post to determine if there's an opportunity to respond in a way that promotes a specific topic.
             
             Your task:
@@ -536,8 +589,11 @@ class ShareReceiverActivity : AppCompatActivity() {
             - The response should feel natural and relevant to the original post
             - The promotion should be subtle and not forced
             - The response should be respectful and professional
-        """.trimIndent()
+            """
+        }.trimIndent()
         
+        // Apply any additional modifications through the helper
+        val instructions = ModeHelper.modifyAnalysisInstructions(this, baseInstructions)
         return """$instructions
 
             ## Topic to promote: $topic
@@ -576,11 +632,10 @@ class ShareReceiverActivity : AppCompatActivity() {
         val generationUrl = "https://api.openai.com/v1/chat/completions"
         val jsonPayload = JSONObject().apply {
             put("model", "gpt-4o-mini")
-            
-            put("messages", org.json.JSONArray().apply {
+              put("messages", org.json.JSONArray().apply {
                 put(JSONObject().apply {
                     put("role", "system")
-                    put("content", "You are a helpful assistant that drafts concise and relevant social media replies. Use the provided context to respond to the original post content.")
+                    put("content", ModeHelper.getResponseGenerationSystemPrompt(this@ShareReceiverActivity))
                 })
                 put(JSONObject().apply {
                     put("role", "user")
@@ -636,19 +691,22 @@ class ShareReceiverActivity : AppCompatActivity() {
     // Fallback response if generation fails
         return "Based on the topic \"$topicName\", you could respond to this post. (Note: Response generation failed; please try again.)"
     }
-
-
     // This function must be inside the class, just before the final closing brace
     private suspend fun showError(message: String) {
         withContext(Dispatchers.Main) {
             statusTextView.text = message // Show error message
             progressBar.visibility = View.GONE            
             copyButton.visibility = View.GONE // Hide copy button on error
-            Toast.makeText(this@ShareReceiverActivity, 
-                "Error processing image", 
-                Toast.LENGTH_LONG).show()
-        }
-    }
+            
+            // Mode-specific error toast
+            val errorToast = if (ModeHelper.isDarkModeActive(this@ShareReceiverActivity)) {
+                "Well that didn't work. Technical difficulties, obviously."
+            } else {
+                "Error processing image"
+            }
+            
+            Toast.makeText(this@ShareReceiverActivity, errorToast, Toast.LENGTH_LONG).show()
+        }    }
 
     /**
      * Refreshes the response by looking for another opportunity using the cached extracted content
@@ -657,15 +715,27 @@ class ShareReceiverActivity : AppCompatActivity() {
     private fun refreshResponse() {
         // Check if we have cached content to work with
         if (cachedExtractedContent.isNullOrBlank() || cachedKnowledgeBase.isNullOrBlank()) {
-            Toast.makeText(this, "Unable to refresh response. Missing content.", Toast.LENGTH_SHORT).show()
+            val errorMsg = if (ModeHelper.isDarkModeActive(this)) {
+                "Can't refresh without content. What did you expect?"
+            } else {
+                "Unable to refresh response. Missing content."
+            }
+            Toast.makeText(this, errorMsg, Toast.LENGTH_SHORT).show()
             return
         }
 
-        // Show progress indicators
+        // Show progress indicators with mode-appropriate messages
         progressBar.visibility = View.VISIBLE
-        statusTextView.text = "Finding another response opportunity..."
-        copyButton.visibility = View.GONE
-        refreshButton.visibility = View.GONE        // Get API key
+        val refreshMsg = if (ModeHelper.isDarkModeActive(this)) {
+            "Finding another way to be cleverly contrary..."
+        } else {
+            "Finding another response opportunity..."
+        }
+        statusTextView.text = refreshMsg
+        copyButton.visibility = View.GONE        
+        refreshButton.visibility = View.GONE
+        
+        // Get API key
         val apiKey = SecureKeyStore.getOpenAIApiKey(this)
         if (apiKey.isEmpty()) {
             // Show error in main thread for non-suspend context
@@ -682,18 +752,22 @@ class ShareReceiverActivity : AppCompatActivity() {
                     .followSslRedirects(true)
                     .followRedirects(true)
                     .build()
-                
-                // Try to find a new opportunity with the same content
+                  // Try to find a new opportunity with the same content
                 val relevantContext = evaluateOpportunity(
                     client, 
                     apiKey, 
                     cachedExtractedContent!!, 
                     cachedKnowledgeBase!!
                 )
-
+                
                 if (relevantContext != null) {
                     withContext(Dispatchers.Main) {
-                        statusTextView.text = "Found another opportunity! Generating response..."
+                        val msg = if (ModeHelper.isDarkModeActive(this@ShareReceiverActivity)) {
+                            "Found the perfect opening for sarcasm! Crafting response..."
+                        } else {
+                            "Found another opportunity! Generating response..."
+                        }
+                        statusTextView.text = msg
                     }
                     
                     // Generate new response
@@ -715,11 +789,15 @@ class ShareReceiverActivity : AppCompatActivity() {
                         progressBar.visibility = View.GONE
                         copyButton.visibility = View.VISIBLE
                         refreshButton.visibility = View.VISIBLE
-                    }
-                } else {
+                    }                } else {
                     // No new opportunity found
                     withContext(Dispatchers.Main) {
-                        statusTextView.text = "No additional response opportunities found."
+                        val noOpportunityMsg = if (ModeHelper.isDarkModeActive(this@ShareReceiverActivity)) {
+                            "Sorry, can't find anything else worth mocking in this content."
+                        } else {
+                            "No additional response opportunities found."
+                        }
+                        statusTextView.text = noOpportunityMsg
                         progressBar.visibility = View.GONE
                         copyButton.visibility = View.GONE
                         refreshButton.visibility = View.GONE
@@ -731,6 +809,15 @@ class ShareReceiverActivity : AppCompatActivity() {
                     showError("Error refreshing: ${e.message}")
                 }
             }
+        }
+    }    override fun onResume() {
+        super.onResume()
+        
+        // Update the title based on current mode when returning to activity
+        title = if (ModeHelper.isDarkModeActive(this)) {
+            getString(R.string.share_receiver_name_demon)
+        } else {
+            getString(R.string.share_receiver_name)
         }
     }
 }

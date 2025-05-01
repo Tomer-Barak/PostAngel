@@ -13,7 +13,7 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-rootProject.name = "PostMuse"
+rootProject.name = "PostAngel"
 include ':app'
 
 // Version catalogs is now a stable feature in Gradle 7.4+, no need to enable it explicitly
