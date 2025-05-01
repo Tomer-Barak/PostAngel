@@ -68,7 +68,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:text="Posts and responses are generated based on your promotional topics. Add and manage your topics through the Knowledge Base."
+                android:text="Posts and responses are generated based on your promotional topics. Add and manage your topics through the knowledge base."
                 android:textAlignment="center"
                 android:padding="8dp"
                 app:layout_constraintLeft_toLeftOf="parent"

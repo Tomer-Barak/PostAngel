@@ -14,6 +14,7 @@ You can download the app directly from:
 - Create AI-generated social media posts based on your personal topics
 - Share screenshots of social media posts to get suggested responses
 - Intelligent response generation that promotes your preferred topics when relevant
+- PostDemon feature: Activates in dark mode to provide more sarcastic post suggestions
 - Uses OpenAI's Vision API to analyze screenshots of social media posts
 - Uses OpenAI's language models to create contextual responses and posts
 - Configurable settings for your OpenAI API Key
@@ -54,7 +55,7 @@ You can download the app directly from:
 2. Tap the "Settings" button on the main screen
 3. You can configure the following settings:
    - **OpenAI API Key**: Your personal API key from OpenAI (required for using the AI services)
-   - **Knowledge Base**: Add, edit, or remove topics you want to promote in your posts and responses
+   - **PostDemon Mode**: Enable or disable the automatic dark mode sarcasm feature
 4. Tap "Save" to apply the changes
 
 ## Technical Details
@@ -66,6 +67,7 @@ You can download the app directly from:
 - Employs advanced LLM prompting to generate contextually relevant posts and responses
 - Maintains a local knowledge base of user-defined topics
 - Intelligently determines when and how to promote user topics in responses
+- Features PostDemon mode that alters AI response tone based on system theme
 - Presents AI-generated content in an easy-to-use, editable interface
 - Open source design with privacy-focused implementation
 
@@ -87,6 +89,12 @@ PostAngel combines multiple AI capabilities to help users create and respond to 
 3. The post is designed to effectively communicate about your selected topics
 4. You can edit the post before sharing it to your preferred platforms
 
+#### PostDemon Feature:
+1. Automatically detects when your device is using dark mode
+2. Transforms the tone of generated posts and responses to be more sarcastic
+3. Provides edgier content suggestions while maintaining relevance to your topics
+4. Perfect for crafting posts with a bit more bite and personality
+5. Switch back to light mode anytime to return to standard tone suggestions
 
 ## License
 
