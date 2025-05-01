@@ -1,5 +1,6 @@
-<resources>    <string name="app_name">PostMuse</string>
-    <string name="share_receiver_name">Send to PostMuse</string>
+<resources>    <string name="app_name">PostAngel</string>
+    <string name="share_receiver_name">Send to PostAngel</string>
+    <string name="share_receiver_name_demon">Send to PostDemon</string>
     <string name="sending_screenshot">Sending screenshot...</string>
     <string name="screenshot_sent">Screenshot sent successfully!</string>
     <string name="error_sending_screenshot">Error sending screenshot</string>
@@ -35,7 +36,7 @@
         Client-side only architecture:\n
         All API requests are made directly from your device to OpenAI. Your API key is never sent to our servers or stored elsewhere.\n\n
         Complete transparency:\n
-        You can view exactly how your API key is handled in our open-source code at https://github.com/Tomer-Barak/PostMuse. The app code shows that API requests go directly to OpenAI\'s servers with your key.\n\n
+        You can view exactly how your API key is handled in our open-source code at https://github.com/Tomer-Barak/PostAngel. The app code shows that API requests go directly to OpenAI\'s servers with your key.\n\n
         API key usage:\n
         Your key is only used for:\n
         - Text generation with OpenAI\'s API\n
@@ -51,13 +52,17 @@
     <string name="create_post_title">Create Social Media Post</string>
     <string name="select_topic">Select Topic</string>
     <string name="generating_post">Generating post...</string>    <string name="post_copied">Post copied to clipboard</string>
-    <string name="tweet_format">TWEET: Check out this topic! %1$s #PostMuse\n%2$s</string>
+    <string name="tweet_format">TWEET: Check out this topic! %1$s #PostAngel\n%2$s</string>
     
     <!-- Refresh feature -->
     <string name="refresh_response">Try Another Response</string>
     
     <!-- Dark Mode -->
-    <string name="dark_mode">Dark Mode</string>
-    <string name="dark_mode_description">Enable dark theme</string>
+    <string name="dark_mode">Dark Mode / PostDemon</string>
+    <string name="dark_mode_description">Enable dark theme and PostDemon mode</string>
     <string name="appearance">Appearance</string>
+    
+    <!-- App Mode Strings -->
+    <string name="mode_angel">PostAngel</string>
+    <string name="mode_demon">PostDemon</string>
 </resources>

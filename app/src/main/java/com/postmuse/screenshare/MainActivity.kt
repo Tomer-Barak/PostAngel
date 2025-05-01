@@ -1,4 +1,4 @@
-package com.postmuse.screenshare
+package com.postangel.screenshare
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -35,6 +35,9 @@ class MainActivity : AppCompatActivity() {
         // Initialize UI elements
         initializeViews()
         setupClickListeners()
+        
+        // Update UI based on current mode (light/dark)
+        updateAppearanceForCurrentMode()
     }
     
     /**
@@ -58,6 +61,31 @@ class MainActivity : AppCompatActivity() {
         } catch (e: Exception) {
             Log.d(TAG, "Privacy button not found in layout", e)
         }
+    }
+    
+    /**
+     * Updates the UI based on whether app is in dark mode (PostDemon) or light mode (PostAngel)
+     */
+    private fun updateAppearanceForCurrentMode() {
+        val appName = ModeHelper.getAppName(this)
+        titleTextView.text = appName
+        
+        // Update description text based on the mode
+        if (ModeHelper.isDarkModeActive(this)) {
+            // Dark mode - PostDemon
+            descriptionTextView.text = "Take a screenshot of a social media post, share it to PostDemon, and get AI-generated sarcastic responses that contradict the topics with clever wit."
+        } else {
+            // Light mode - PostAngel
+            descriptionTextView.text = "Take a screenshot of a social media post, share it to PostAngel, and get AI-generated responses that promote your topics."
+        }
+    }
+    
+    /**
+     * Called when returning to this activity - update UI in case dark mode changed
+     */
+    override fun onResume() {
+        super.onResume()
+        updateAppearanceForCurrentMode()
     }
     
     /**

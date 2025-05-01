@@ -2,11 +2,11 @@ Categories:
   - Writing
 License: MIT
 WebSite: # Optional: Link to project website if you have one
-SourceCode: https://github.com/Tomer-Barak/PostMuse.git
-IssueTracker: https://github.com/Tomer-Barak/PostMuse/issues
+SourceCode: https://github.com/Tomer-Barak/PostAngel.git
+IssueTracker: https://github.com/Tomer-Barak/PostAngel/issues
 
 # AutoName: ScreenShare # Uncomment if you want F-Droid to use the name from AndroidManifest/build.gradle
-Name: PostMuse
+Name: PostAngel
 Summary: AI-powered social media post creation and response suggestions.
 Description: | # Required (Markdown supported)
   An Android application that helps users create and respond to social media posts using AI and a personal knowledge base.
@@ -22,7 +22,7 @@ Description: | # Required (Markdown supported)
   * Open source and privacy-focused
 
 RepoType: git
-Repo: https://github.com/Tomer-Barak/PostMuse.git
+Repo: https://github.com/Tomer-Barak/PostAngel.git
 
 Builds:
   - versionName: "1.0" # Matches app/build.gradle

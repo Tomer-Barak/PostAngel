@@ -1,7 +1,7 @@
 #!/usr/bin/env pwsh
 <#
 .SYNOPSIS
-    Creates a GitHub release with the APK file for PostMuse app
+    Creates a GitHub release with the APK file for PostAngel app
 .DESCRIPTION
     This script builds a release APK and guides you through creating a GitHub release
 #>
@@ -15,12 +15,13 @@ param(
     [int]$VersionCode,
     
     [Parameter(Mandatory=$false)]
-    [string]$ReleaseNotes = "New release of PostMuse"
+    
+    [string]$ReleaseNotes = "New release of PostAngel"
 )
 
 # Configuration
 $RepoOwner = "Tomer-Barak"
-$RepoName = "PostMuse"
+$RepoName = "PostAngel"
 $GithubRepoUrl = "https://github.com/$RepoOwner/$RepoName"
 $ApkPath = "app/build/outputs/apk/release/app-release.apk"
 $TagName = "v$VersionName"
@@ -44,7 +45,7 @@ Write-Host "`nAPK successfully built at: $ApkPath" -ForegroundColor Green
 Write-Host "`nNow follow these steps to create a GitHub release:" -ForegroundColor Cyan
 Write-Host "1. Go to: $GithubRepoUrl/releases/new" -ForegroundColor White
 Write-Host "2. Enter tag version: $TagName" -ForegroundColor White
-Write-Host "3. Enter release title: PostMuse $VersionName" -ForegroundColor White
+Write-Host "3. Enter release title: PostAngel $VersionName" -ForegroundColor White
 Write-Host "4. Enter release description with the following notes:" -ForegroundColor White
 Write-Host "   $ReleaseNotes" -ForegroundColor White
 Write-Host "5. Upload the APK from: $ApkPath" -ForegroundColor White

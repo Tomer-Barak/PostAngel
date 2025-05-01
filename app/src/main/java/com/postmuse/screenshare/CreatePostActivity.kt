@@ -1,4 +1,4 @@
-package com.postmuse.screenshare
+package com.postangel.screenshare
 
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -175,16 +175,19 @@ class CreatePostActivity : AppCompatActivity() {
         }
         
         return ""
-    }private suspend fun generatePromotionalTweet(apiKey: String, topic: String, topicDescription: String, specialInstructions: String = ""): String? {
+    }    private suspend fun generatePromotionalTweet(apiKey: String, topic: String, topicDescription: String, specialInstructions: String = ""): String? {
         val client = OkHttpClient()
         val prompt = constructGenerationPrompt(topic, topicDescription, specialInstructions)
+        
+        // Get appropriate system prompt based on current mode (angel/demon)
+        val systemPrompt = ModeHelper.getPostGenerationSystemPrompt(this)
 
         val jsonPayload = JSONObject().apply {
             put("model", "gpt-4o-mini")
             put("messages", org.json.JSONArray().apply {
                 put(JSONObject().apply {
                     put("role", "system")
-                    put("content", "You are a social media assistant creating promotional posts.")
+                    put("content", systemPrompt)
                 })
                 put(JSONObject().apply {
                     put("role", "user")
@@ -248,7 +251,7 @@ class CreatePostActivity : AppCompatActivity() {
             ""
         }
         
-        return """
+        val basePrompt = """
             You are creating a social media post to promote a specific topic.
             
             Your task:
@@ -273,6 +276,9 @@ class CreatePostActivity : AppCompatActivity() {
             ${specialInstructionsBlock}
             Create an engaging promotional post for this topic.
         """.trimIndent()
+        
+        // Modify the prompt based on current mode
+        return ModeHelper.modifyPostGenerationPrompt(this, basePrompt)
     }
 
     private suspend fun showError(message: String) {

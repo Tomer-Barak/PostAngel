@@ -1,4 +1,4 @@
-package com.postmuse.screenshare
+package com.postangel.screenshare
 
 import android.content.Intent
 import android.os.Bundle
@@ -79,14 +79,20 @@ class SettingsActivity : AppCompatActivity() {
             applyDarkMode(isChecked)
         }
     }
-    
-    private fun applyDarkMode(enabled: Boolean) {
+      private fun applyDarkMode(enabled: Boolean) {
         PrefsUtil.setDarkModeEnabled(this, enabled)
+        
+        // Apply the appropriate night mode
         if (enabled) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            Toast.makeText(this, "PostDemon mode activated", Toast.LENGTH_SHORT).show()
         } else {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            Toast.makeText(this, "PostAngel mode activated", Toast.LENGTH_SHORT).show()
         }
+        
+        // We need to recreate the activity to apply the theme changes fully
+        recreate()
     }private fun saveSettings() {
         val serverUrl = serverUrlEditText.text.toString().trim()
         val apiKey = secureApiKeyEditText.getText().trim()

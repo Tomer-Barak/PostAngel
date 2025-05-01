@@ -1,10 +1,10 @@
-# Privacy Policy for PostMuse
+# Privacy Policy for PostAngel
 
 **Effective Date: April 30, 2025**
 
 ## Introduction
 
-Welcome to PostMuse. We are committed to protecting your privacy and being transparent about how we use your data. This Privacy Policy explains what information we collect, how we use it, and your rights regarding your information when you use our application.
+Welcome to PostAngel. We are committed to protecting your privacy and being transparent about how we use your data. This Privacy Policy explains what information we collect, how we use it, and your rights regarding your information when you use our application.
 
 ## Information We Collect
 

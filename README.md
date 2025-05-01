@@ -1,14 +1,13 @@
-# PostMuse App
+# PostAngel App
 
-![PostMuse Logo](icon.png)
+![PostAngel Logo](icon.png)
 
 An Android application that helps users create and respond to social media posts using AI and a personal knowledge base.
 
 ## Download
 
 You can download the app directly from:
-- [GitHub Releases](https://github.com/Tomer-Barak/PostMuse/releases) - Latest APK
-- [F-Droid](https://f-droid.org/packages/com.postmuse.screenshare/) - Available after F-Droid review process
+- [GitHub Releases](https://github.com/Tomer-Barak/PostAngel/releases) - Latest APK
 
 ## Features
 
@@ -42,7 +41,7 @@ You can download the app directly from:
 ### For Response Suggestions:
 1. Take a screenshot of a social media post you want to respond to
 2. Tap the "Share" button
-3. Select "Send to PostMuse" from the share menu
+3. Select "Send to PostAngel" from the share menu
 4. The app will:
    - Analyze the screenshot using OpenAI's Vision API
    - Compare the content to your knowledge base of topics
@@ -71,9 +70,9 @@ You can download the app directly from:
 - Open source design with privacy-focused implementation
 
 
-### How PostMuse Works
+### How PostAngel Works
 
-PostMuse combines multiple AI capabilities to help users create and respond to social media content:
+PostAngel combines multiple AI capabilities to help users create and respond to social media content:
 
 #### Screenshot Analysis Flow:
 1. When you share a social media post screenshot, it's processed by OpenAI's Vision API

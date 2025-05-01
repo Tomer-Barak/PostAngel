@@ -1,4 +1,4 @@
-package com.postmuse.screenshare;
+package com.postangel.screenshare;
 
 import android.os.Bundle;
 import android.webkit.WebView;
