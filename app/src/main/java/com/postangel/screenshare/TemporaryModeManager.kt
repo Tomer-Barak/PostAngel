@@ -48,14 +48,20 @@ object TemporaryModeManager {
     fun clearTemporaryMode() {
         usingTemporaryMode = false
     }
-    
-    /**
-     * Toggle temporary mode to the opposite of current saved preference
+      /**
+     * Toggle temporary mode to the opposite of current active mode
      * @return the new mode (true for dark, false for light)
      */
     fun toggleTemporaryMode(context: Context): Boolean {
-        val currentSavedMode = PrefsUtil.isDarkModeEnabled(context)
-        temporaryDarkMode = !currentSavedMode
+        // If already using temporary mode, toggle the temporary mode
+        // Otherwise toggle based on the saved preference
+        val currentMode = if (usingTemporaryMode) {
+            temporaryDarkMode
+        } else {
+            PrefsUtil.isDarkModeEnabled(context)
+        }
+        
+        temporaryDarkMode = !currentMode
         usingTemporaryMode = true
         return temporaryDarkMode
     }
