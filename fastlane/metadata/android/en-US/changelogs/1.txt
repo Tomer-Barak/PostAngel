@@ -1,4 +1,0 @@
-Initial release of PostAngel:
-- Full app functionality with AI-powered social media post creation 
-- Screenshot sharing for response suggestions
-- Personal knowledge base integration

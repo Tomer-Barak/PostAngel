@@ -1,2 +1,0 @@
-App renamed from PostMuse to PostAngel for better branding
-Added the PostDemon functionality

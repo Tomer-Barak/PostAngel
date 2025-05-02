@@ -1,13 +1,20 @@
 Categories:
   - Writing
+  - Social
 License: MIT
-WebSite: # Optional: Link to project website if you have one
+
+# Author information
+AuthorName: Tomer Barak
+AuthorEmail: tomer.barak.mail@gmail.com
+AuthorWebSite: https://tomer-barak.github.io
+
+WebSite: https://tomer-barak.github.io/projects/postangel/
 SourceCode: https://github.com/Tomer-Barak/PostAngel.git
 IssueTracker: https://github.com/Tomer-Barak/PostAngel/issues
 
-# AutoName: ScreenShare # Uncomment if you want F-Droid to use the name from AndroidManifest/build.gradle
-Name: PostAngel
-Summary: AI-powered social media post creation and response suggestions.
+# App name and description
+AutoName: PostAngel
+Summary: Create AI-powered social media posts and get smart response suggestions based on your personal topics.
 Description: | # Required (Markdown supported)
   An Android application that helps users create and respond to social media posts using AI and a personal knowledge base.
 
@@ -15,13 +22,19 @@ Description: | # Required (Markdown supported)
   * Create AI-generated social media posts based on your personal topics
   * Share screenshots of social media posts to get suggested responses
   * Intelligent response generation that promotes your preferred topics when relevant
-  * Uses OpenAI's Vision API to analyze screenshots of social media posts
-  * Uses OpenAI's language models to create contextual responses and posts
+  * PostDemon feature: Activates in dark mode to provide more sarcastic post suggestions
+  * Uses Vision models to analyze screenshots of social media posts
+  * Uses language models to create contextual responses and posts
   * Support for custom API providers and models
   * Markdown formatting support
-  * Configurable settings for your OpenAI API Key
+  * Configurable settings for your API key
   * Maintain a personal knowledge base of topics you want to promote
   * Open source and privacy-focused
+
+  How PostAngel Works:
+  * Screenshot Analysis: Process social media post screenshots, analyze content, and compare with your topics
+  * Post Creation: Select topics and create customized social media posts
+  * PostDemon: Dark mode feature that provides more sarcastic responses
 
 RepoType: git
 Repo: https://github.com/Tomer-Barak/PostAngel.git
@@ -40,6 +53,7 @@ Builds:
     subdir: app
     gradle:
       - yes # Use Gradle wrapper
+
 
 AutoUpdateMode: Version # Check for new versions based on versionName in build.gradle
 UpdateCheckMode: Tags   # Look for Git tags matching v*.*.* pattern for updates

@@ -4,8 +4,31 @@ Features:
 * Create AI-generated social media posts based on your personal topics
 * Share screenshots of social media posts to get suggested responses
 * Intelligent response generation that promotes your preferred topics when relevant
-* Uses OpenAI's Vision API to analyze screenshots of social media posts
-* Uses OpenAI's language models to create contextual responses and posts
-* Configurable settings for your OpenAI API Key
+* PostDemon feature: Activates in dark mode to provide more sarcastic post suggestions
+* Uses Vision models to analyze screenshots of social media posts
+* Uses language models to create contextual responses and posts
+* Support for custom API providers and models
+* Markdown formatting support
+* Configurable settings for your API key
 * Maintain a personal knowledge base of topics you want to promote
 * Open source and privacy-focused
+
+How PostAngel Works:
+
+Screenshot Analysis Flow:
+1. When you share a social media post screenshot, it's processed by a Vision model
+2. The app analyzes the content to understand the post's topic and context
+3. It then compares this context with your knowledge base of preferred topics
+4. If there's a relevant match, it generates a response that naturally incorporates your topic
+5. If no direct match, it provides a contextual response based on the post content
+
+Post Creation Flow:
+1. You select topics from your knowledge base
+2. The app uses language models to craft a social media post
+3. The post is designed to effectively communicate about your selected topics
+4. You can edit the post before sharing it to your preferred platforms
+
+PostDemon Feature:
+1. Automatically detects when your device is using dark mode
+2. Transforms the tone of generated posts and responses to be more sarcastic
+3. Perfect for crafting posts with more personality while maintaining relevance to your topics
