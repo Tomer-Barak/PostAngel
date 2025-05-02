@@ -22,15 +22,14 @@ class ApiKeySecurityDialog(context: Context) : Dialog(context) {
         super.onCreate(savedInstanceState)
         requestWindowFeature(Window.FEATURE_NO_TITLE)
         window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        
-        setContentView(R.layout.dialog_api_key_security)          // Make links clickable and set HTML formatting
+
+        setContentView(R.layout.dialog_api_key_security)
         val explanationText = findViewById<TextView>(R.id.securityExplanationText)
-        explanationText.text = HtmlCompat.fromHtml(
-            context.getString(R.string.api_key_security_explanation), 
-            HtmlCompat.FROM_HTML_MODE_COMPACT
-        )
-        explanationText.movementMethod = LinkMovementMethod.getInstance()
-        
+
+        // Use Markwon for Markdown rendering
+        val markwon = io.noties.markwon.Markwon.create(context)
+        markwon.setMarkdown(explanationText, context.getString(R.string.api_key_security_explanation))
+
         // Set close button click listener
         findViewById<Button>(R.id.closeButton).setOnClickListener {
             dismiss()

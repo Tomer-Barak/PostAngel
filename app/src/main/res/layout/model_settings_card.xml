@@ -1,0 +1,446 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="2dp"
+    android:layout_margin="8dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/modelSettingsTitleTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/models_and_api"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Global API Settings -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="4dp"
+            app:cardElevation="1dp"
+            android:layout_marginBottom="16dp">
+            
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="12dp">
+                  <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+                    
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@android:drawable/ic_secure"
+                        android:layout_marginEnd="8dp" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/global_settings"
+                        android:textStyle="bold" />
+
+                    <ImageButton
+                        android:id="@+id/apiSecurityInfoButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:src="@android:drawable/ic_dialog_info"
+                        android:contentDescription="@string/api_key_security_info" />
+                </LinearLayout>
+                  <!-- Global API Key -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/global_api_key"
+                    android:layout_marginTop="8dp"/>
+                
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+                    
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Key: "
+                        android:layout_marginEnd="8dp"/>
+                        
+                    <com.postangel.screenshare.SecureApiKeyEditText
+                        android:id="@+id/globalApiKeyEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/enter_global_api_key"
+                        android:inputType="textPassword"
+                        android:importantForAutofill="no"/>
+                </LinearLayout>
+                
+                <!-- Global API URL -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/global_api_url"
+                    android:layout_marginTop="8dp"/>
+                
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+                    
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="URL: "
+                        android:layout_marginEnd="8dp"/>
+                        
+                    <EditText
+                        android:id="@+id/globalApiUrlEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/default_api_url"
+                        android:inputType="textUri"
+                        android:importantForAutofill="no"/>
+                </LinearLayout>
+                  <!-- Use Custom API Keys switch -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="8dp">
+                    
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/use_custom_api_keys"/>
+                    
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/useGlobalApiKeySwitch"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="false"/>
+                </LinearLayout>
+                  <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/global_api_key_description"
+                    android:textSize="12sp"
+                    android:alpha="0.7"/>
+                    
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Your API key is stored securely and used only for direct API calls from your device."
+                    android:textSize="12sp"
+                    android:textColor="#757575"
+                    android:layout_marginTop="4dp" />
+
+                <TextView
+                    android:id="@+id/learnMoreLink"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/learn_about_security"
+                    android:textColor="#03A9F4"
+                    android:layout_marginTop="4dp"
+                    android:clickable="true"
+                    android:focusable="true" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>        <!-- Models Section -->
+        <LinearLayout
+            android:id="@+id/modelsSection"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+            
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/models_section"
+                android:textStyle="bold"/>
+
+        <!-- Vision Model Section -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="16dp">
+            
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/vision_model"/>
+
+            <EditText
+                android:id="@+id/visionModelEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/default_vision_model"
+                android:inputType="text"
+                android:importantForAutofill="no"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/vision_model_description"
+                android:textSize="12sp"
+                android:alpha="0.7"/>
+                
+            <LinearLayout
+                android:id="@+id/visionCustomSettingsLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="4dp"
+                android:visibility="gone">                
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+                    
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="URL: "
+                        android:layout_marginEnd="8dp"/>
+                        
+                    <EditText
+                        android:id="@+id/visionApiUrlEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/vision_api_url_hint"
+                        android:inputType="textUri"
+                        android:importantForAutofill="no"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+                    
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Key: "
+                        android:layout_marginEnd="8dp"/>
+                        
+                    <com.postangel.screenshare.SecureApiKeyEditText
+                        android:id="@+id/visionApiKeyEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/vision_api_key_hint"
+                        android:inputType="textPassword"
+                        android:importantForAutofill="no"/>
+                </LinearLayout>
+            </LinearLayout>
+            
+            <Button
+                android:id="@+id/toggleVisionCustomSettingsButton"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/customize_api_settings"
+                android:textSize="12sp"/>
+        </LinearLayout>
+
+        <!-- Response Model -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginBottom="16dp">
+            
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/response_model"/>
+
+            <EditText
+                android:id="@+id/responseModelEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/default_response_model"
+                android:inputType="text"
+                android:importantForAutofill="no"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/response_model_description"
+                android:textSize="12sp"
+                android:alpha="0.7"/>
+                
+            <LinearLayout
+                android:id="@+id/responseCustomSettingsLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="4dp"
+                android:visibility="gone">                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+                    
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="URL: "
+                        android:layout_marginEnd="8dp"/>
+                        
+                    <EditText
+                        android:id="@+id/responseApiUrlEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/response_api_url_hint"
+                        android:inputType="textUri"
+                        android:importantForAutofill="no"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+                    
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Key: "
+                        android:layout_marginEnd="8dp"/>
+                        
+                    <com.postangel.screenshare.SecureApiKeyEditText
+                        android:id="@+id/responseApiKeyEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/response_api_key_hint"
+                        android:inputType="textPassword"
+                        android:importantForAutofill="no"/>
+                </LinearLayout>
+            </LinearLayout>
+            
+            <Button
+                android:id="@+id/toggleResponseCustomSettingsButton"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/customize_api_settings"
+                android:textSize="12sp"/>
+        </LinearLayout>
+
+        <!-- Post Generation Model -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginBottom="16dp">
+            
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/post_generation_model"/>
+
+            <EditText
+                android:id="@+id/postGenerationModelEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/default_post_generation_model"
+                android:inputType="text"
+                android:importantForAutofill="no"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/post_generation_model_description"
+                android:textSize="12sp"
+                android:alpha="0.7"/>
+                
+            <LinearLayout
+                android:id="@+id/postGenerationCustomSettingsLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="4dp"
+                android:visibility="gone">                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+                    
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="URL: "
+                        android:layout_marginEnd="8dp"/>
+                        
+                    <EditText
+                        android:id="@+id/postGenerationApiUrlEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/post_generation_api_url_hint"
+                        android:inputType="textUri"
+                        android:importantForAutofill="no"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+                    
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Key: "
+                        android:layout_marginEnd="8dp"/>
+                        
+                    <com.postangel.screenshare.SecureApiKeyEditText
+                        android:id="@+id/postGenerationApiKeyEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/post_generation_api_key_hint"
+                        android:inputType="textPassword"
+                        android:importantForAutofill="no"/>
+                </LinearLayout>
+            </LinearLayout>
+            
+            <Button
+                android:id="@+id/togglePostGenerationCustomSettingsButton"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/customize_api_settings"
+                android:textSize="12sp"/>
+        </LinearLayout>       
+         <Button
+            android:id="@+id/resetModelsButton"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/reset_to_defaults"
+            android:layout_gravity="end"
+            android:layout_marginTop="8dp"/>
+        
+        </LinearLayout> <!-- End of models section -->
+
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

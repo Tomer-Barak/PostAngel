@@ -140,40 +140,12 @@ class MainActivity : AppCompatActivity() {
             if (topicsDir.mkdirs()) {
                 Log.i(TAG, "Topics directory created successfully at ${topicsDir.absolutePath}")
                 // Create a sample topic file if this is first run
-                createSampleTopic(topicsDir)
+                // createSampleTopic(topicsDir)
             } else {
                 Log.e(TAG, "Failed to create Topics directory at ${topicsDir.absolutePath}")
             }
         } else {
             Log.i(TAG, "Topics directory already exists at ${topicsDir.absolutePath}")
-        }
-    }
-    
-    /**
-     * Creates a sample topic file to help users understand how the knowledge base works.
-     */
-    private fun createSampleTopic(topicsDir: File) {
-        try {
-            val sampleFile = File(topicsDir, "Sample Topic.txt")
-            if (!sampleFile.exists()) {
-                sampleFile.writeText(
-                    """
-                    This is a sample topic file.
-                    
-                    In your topic files, you should include information about products,
-                    services, or ideas that you want to promote when relevant opportunities
-                    arise on social media.
-                    
-                    The app will analyze social media posts you share and suggest responses
-                    based on the content in these topic files when there's a relevant match.
-                    
-                    You can edit this file or create new ones using the Knowledge Base manager.
-                    """.trimIndent()
-                )
-                Log.i(TAG, "Created sample topic file at ${sampleFile.absolutePath}")
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Error creating sample topic", e)
         }
     }
 }

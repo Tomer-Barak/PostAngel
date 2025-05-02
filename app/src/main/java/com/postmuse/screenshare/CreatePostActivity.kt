@@ -198,10 +198,15 @@ class CreatePostActivity : AppCompatActivity() {
         val client = OkHttpClient()
         val prompt = constructGenerationPrompt(topic, topicDescription, specialInstructions)
         
+        // Get post generation API URL and key
+        val postGenerationUrl = PrefsUtil.getPostGenerationApiUrl(this)
+        val postGenerationApiKey = SecureKeyStore.getPostGenerationApiKey(this, PrefsUtil.isUsingGlobalApiKey(this))
+        val effectiveApiKey = if (postGenerationApiKey.isNotEmpty()) postGenerationApiKey else apiKey
+        
         // Get appropriate system prompt based on current mode (angel/demon)
         val systemPrompt = ModeHelper.getPostGenerationSystemPrompt(this)
             val jsonPayload = JSONObject().apply {
-            put("model", "gpt-4o-mini")
+            put("model", PrefsUtil.getPostGenerationModel(this@CreatePostActivity))
             put("messages", org.json.JSONArray().apply {
                 put(JSONObject().apply {
                     put("role", "system")
@@ -217,11 +222,10 @@ class CreatePostActivity : AppCompatActivity() {
         }
 
         val requestBody = jsonPayload.toString().toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
-        
-        val request = Request.Builder()
-            .url(PrefsUtil.SERVER_URL)
+          val request = Request.Builder()
+            .url(postGenerationUrl.toString())
             .post(requestBody)
-            .addHeader("Authorization", "Bearer $apiKey")
+            .addHeader("Authorization", "Bearer $effectiveApiKey")
             .addHeader("Content-Type", "application/json")
             .build()
 

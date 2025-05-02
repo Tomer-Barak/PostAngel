@@ -3,6 +3,7 @@ package com.postangel.screenshare
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.Resources
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -116,34 +117,39 @@ class KnowledgeBaseActivity : AppCompatActivity() {    companion object {
         // Setup Topics directory
         topicsDir = File(filesDir, TOPICS_DIR_NAME)
         if (!topicsDir.exists()) {
-            if (topicsDir.mkdirs()) {
-                Log.d(TAG, "Created topics directory at ${topicsDir.absolutePath}")
-            } else {
-                Log.e(TAG, "Failed to create topics directory")
-                Toast.makeText(this, "Failed to create topics directory", Toast.LENGTH_SHORT).show()
-            }
+            topicsDir.mkdirs()
+            Log.d(TAG, "Created Topics directory: ${topicsDir.absolutePath}")
         }
-        
-        // Setup RecyclerView
-        adapter = TopicAdapter(topics, 
+
+        // Log existing files before checking emptiness
+        val existingFiles = topicsDir.listFiles()
+        Log.d(TAG, "Checking Topics directory: ${topicsDir.absolutePath}")
+        Log.d(TAG, "Files found: ${existingFiles?.map { it.name }?.joinToString() ?: "None or Error"}")
+
+        // Initialize the adapter BEFORE loadTopics is called
+        adapter = TopicAdapter(
+            topics,
             onItemClick = { topic -> openTopicEditor(topic) },
-            onDeleteClick = { topic -> confirmDeleteTopic(topic) }
+            onDeleteClick = { topic -> confirmDeleteTopic(topic) },
+            context = this
         )
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = adapter
-        
-        // Setup FAB for adding new topics
+
+        // Add sample topic if the directory is empty
+        if (existingFiles?.isEmpty() == true) {
+            Log.d(TAG, "Topics directory IS empty. Calling createSampleTopic().") // Added log
+            createSampleTopic()
+            loadTopics() // Reload topics after creating samples
+        } else {
+            Log.d(TAG, "Topics directory IS NOT empty. Skipping createSampleTopic().") // Added log
+            // Load topics even if not empty (original behavior)
+            loadTopics()
+        }
+
         fabAddTopic.setOnClickListener {
             showNewTopicDialog()
         }
-        
-        // Add sample topic if the directory is empty
-        if (topicsDir.listFiles()?.isEmpty() == true) {
-            createSampleTopic()
-        }
-        
-        // Load topics
-        loadTopics()
     }
     
     override fun onSupportNavigateUp(): Boolean {
@@ -207,8 +213,8 @@ class KnowledgeBaseActivity : AppCompatActivity() {    companion object {
             Log.e(TAG, "Error deleting all topics", e)
             Toast.makeText(this, "Error deleting topics: ${e.message}", Toast.LENGTH_SHORT).show()
         }
-    }
-      private fun loadTopics() {
+    }    
+    private fun loadTopics() {
         topics.clear()
         try {
             // Log supported file types
@@ -220,7 +226,12 @@ class KnowledgeBaseActivity : AppCompatActivity() {    companion object {
                               file.extension.equals("md", ignoreCase = true))
             }
             
-            files?.forEach { file ->
+            // Sort files - put markdown files first
+            val sortedFiles = files?.sortedWith(compareBy { 
+                !it.name.endsWith(".md", ignoreCase = true) 
+            })
+            
+            sortedFiles?.forEach { file ->
                 try {
                     Log.d(TAG, "Loading topic file: ${file.name}")
                     val content = file.readText()
@@ -244,45 +255,202 @@ class KnowledgeBaseActivity : AppCompatActivity() {    companion object {
             Log.e(TAG, "Error loading topics", e)
             Toast.makeText(this, "Error loading topics: ${e.message}", Toast.LENGTH_SHORT).show()
         }
-    }
-    
+    }    
     private fun createSampleTopic() {
+    Log.d(TAG, "Starting to create sample topics...")
+    
+    // Create Topics directory if it doesn't exist
+    if (!topicsDir.exists()) {
+        topicsDir.mkdirs()
+        Log.d(TAG, "Created Topics directory: ${topicsDir.absolutePath}")
+    }
+
+    var textCreated = false
+    var markdownCreated = false
+
+    // Create text sample first
+    try {
+        val sampleTextFile = File(topicsDir, "Sample Topic.txt")
+        sampleTextFile.writeText(
+            """
+            This is a sample topic file.
+            
+            In your topic files, you should include information about products,
+            services, or ideas that you want to promote when relevant opportunities
+            arise on social media.
+            
+            The app will analyze social media posts you share and suggest responses
+            based on the content in these topic files when there's a relevant match.
+            
+            You can edit this file or create new ones to customize the knowledge base.
+            """.trimIndent()
+        )
+        textCreated = sampleTextFile.exists() && sampleTextFile.length() > 0
+        Log.d(TAG, "Text sample creation ${if (textCreated) "successful" else "failed"}")
+    } catch (e: Exception) {
+        Log.e(TAG, "Failed to create text sample", e)
+    }
+
+    
+    // Try to create markdown sample
+    try {
+        createMarkdownSample()
+        val markdownFile = File(topicsDir, "PostAngel.md")
+        markdownCreated = markdownFile.exists() && markdownFile.length() > 0
+        Log.d(TAG, "Markdown sample creation ${if (markdownCreated) "successful" else "failed"}")
+    } catch (e: Exception) {
+        Log.e(TAG, "Failed to create main markdown sample, trying fallback", e)
         try {
-            val sampleFile = File(topicsDir, "Sample Topic.txt")
-            sampleFile.writeText(
-                """
-                This is a sample topic file.
-                
-                In your topic files, you should include information about products,
-                services, or ideas that you want to promote when relevant opportunities
-                arise on social media.
-                
-                The app will analyze social media posts you share and suggest responses
-                based on the content in these topic files when there's a relevant match.
-                
-                You can edit this file or create new ones to customize the knowledge base.
-                """.trimIndent()
-            )
-            Log.d(TAG, "Created sample topic file")
+            createFallbackMarkdownSample()
+            val fallbackFile = File(topicsDir, "Markdown Example.md")
+            markdownCreated = fallbackFile.exists() && fallbackFile.length() > 0
+            Log.d(TAG, "Fallback markdown creation ${if (markdownCreated) "successful" else "failed"}")
         } catch (e: Exception) {
-            Log.e(TAG, "Error creating sample topic", e)
+            Log.e(TAG, "Failed to create fallback markdown sample", e)
         }
     }
-      private fun showNewTopicDialog() {
+
+    // Log final results
+    Log.d(TAG, "Sample creation complete. Text: $textCreated, Markdown: $markdownCreated")
+    
+    // Force refresh of topics list if at least one sample was created
+    if (textCreated || markdownCreated) {
+        loadTopics()
+    }
+}
+
+private fun createMarkdownSample() {
+    val sampleMarkdownFile = File(topicsDir, "PostAngel.md")
+    Log.d(TAG, "Attempting to create markdown file at: ${sampleMarkdownFile.absolutePath}")
+
+    try {
+        // Check if resource exists first
+        val resourceId = R.raw.readme_content
+        Log.d(TAG, "Looking for resource with ID: $resourceId")
+        
+        try {
+            resources.getResourceName(resourceId)
+        } catch (e: Resources.NotFoundException) {
+            Log.e(TAG, "Resource readme_content not found in R.raw", e)
+            throw IOException("Resource not found: R.raw.readme_content")
+        }
+
+        // If we got here, resource exists, try to read it
+        val inputStream = resources.openRawResource(resourceId)
+        Log.d(TAG, "Successfully opened resource stream")
+        
+        val readmeContent = inputStream.bufferedReader().use { 
+            Log.d(TAG, "Reading content from resource stream")
+            it.readText() 
+        }
+        
+        // Make sure the content is not empty
+        if (readmeContent.isBlank()) {
+            Log.e(TAG, "README content is empty")
+            throw IOException("README content is empty")
+        }
+        
+        Log.d(TAG, "Read content length: ${readmeContent.length} characters")
+        
+        // Write content to file
+        sampleMarkdownFile.writeText(readmeContent)
+        Log.d(TAG, "Wrote content to file")
+        
+        // Verify file was created successfully
+        if (sampleMarkdownFile.exists() && sampleMarkdownFile.length() > 0) {
+            Log.d(TAG, "Successfully created markdown sample: ${sampleMarkdownFile.length()} bytes")
+        } else {
+            Log.e(TAG, "File creation verification failed")
+            throw IOException("Markdown file was not created properly")
+        }
+    } catch (e: Exception) {
+        Log.e(TAG, "Failed to create markdown sample from resource", e)
+        throw e // Re-throw to trigger fallback
+    }
+}
+
+      
+private fun createFallbackMarkdownSample() {
+    val sampleMarkdownFile = File(topicsDir, "Markdown Example.md")
+    try {
+        sampleMarkdownFile.writeText(
+            """
+            # Markdown Example
+            
+            This is a fallback sample topic showing how to use Markdown formatting.
+            
+            ## Features
+            - You can use Markdown for formatting
+            - Like **bold** and *italic* text
+            - Or create lists like this one
+            
+            ## Examples
+            
+            ### Text Formatting
+            - **Bold text** using double asterisks
+            - *Italic text* using single asterisks
+            - `Code snippets` using backticks
+            
+            ### Lists
+            1. Numbered lists
+            2. Are easy to create
+            3. Just start with numbers
+            
+            ### Quotes
+            > You can create blockquotes
+            > For important information
+            
+            ### Links
+            You can add [links to websites](https://example.com)
+            
+            ## Tips for Usage
+            - Keep your content organized with headers
+            - Use lists for better readability
+            - Include relevant keywords
+            - Add examples when helpful
+            
+            Feel free to edit this file or create new ones!
+            """.trimIndent()
+        )
+        
+        if (sampleMarkdownFile.exists() && sampleMarkdownFile.length() > 0) {
+            Log.d(TAG, "Successfully created fallback markdown sample: ${sampleMarkdownFile.absolutePath}")
+        } else {
+            throw IOException("Fallback markdown file was created but is empty")
+        }
+        
+    } catch (e: Exception) {
+        Log.e(TAG, "Failed to create fallback markdown sample", e)
+        throw e
+    }
+}
+    
+    private fun showNewTopicDialog() {
         val input = EditText(this)
         input.inputType = InputType.TYPE_CLASS_TEXT
+        
+        // Add padding to the input field (16dp on all sides)
+        val paddingInDp = 16
+        val scale = resources.displayMetrics.density
+        val paddingInPx = (paddingInDp * scale + 0.5f).toInt()
+        input.setPadding(paddingInPx, paddingInPx, paddingInPx, paddingInPx)
+        
+        // Set initial hint for .txt
         input.hint = "Topic name (will be saved as [name].txt)"
         
         val fileTypes = arrayOf("Text (.txt)", "Markdown (.md)")
         var selectedFileType = 0 // Default to .txt
         
-        AlertDialog.Builder(this)
+        val dialog = AlertDialog.Builder(this)
             .setTitle("New Topic")
             .setView(input)
             .setSingleChoiceItems(fileTypes, selectedFileType) { _, which ->
                 selectedFileType = which
+                // Update hint text based on selection
+                input.hint = "Topic name (will be saved as [name]${if (which == 0) ".txt" else ".md"})"
             }
-            .setPositiveButton("Create") { _, _ ->                val topicName = input.text.toString().trim()
+            .setPositiveButton("Create") { _, _ ->                
+                val topicName = input.text.toString().trim()
                 if (topicName.isNotEmpty()) {
                     // Use selected file type
                     val extension = if (selectedFileType == 0) ".txt" else ".md"
@@ -291,8 +459,9 @@ class KnowledgeBaseActivity : AppCompatActivity() {    companion object {
             }
             .setNegativeButton("Cancel", null)
             .show()
-    }
-      private fun createNewTopic(topicName: String, extension: String = ".txt") {
+    }    
+    
+    private fun createNewTopic(topicName: String, extension: String = ".txt") {
         var finalName = topicName
         if (!finalName.endsWith(".txt", ignoreCase = true) && !finalName.endsWith(".md", ignoreCase = true)) {
             finalName = "$finalName$extension"
@@ -307,9 +476,33 @@ class KnowledgeBaseActivity : AppCompatActivity() {    companion object {
                 return
             }
             
-            // Create empty file
+            // Initial content based on file type
+            val isMarkdownFile = finalName.endsWith(".md", ignoreCase = true)
+            val initialContent = if (isMarkdownFile) {
+                """
+                # ${finalName.substringBeforeLast(".")}
+                
+                ## About this topic
+                
+                Write your topic information here using Markdown formatting.
+                
+                ## Markdown Tips:
+                - **Bold text** is created using `**text**`
+                - *Italic text* is created using `*text*`
+                - Use `#` symbols for headings
+                - Create lists with `-` or `*`
+                - [Links](https://example.com) use `[text](url)`
+                
+                Delete these tips and add your own content.
+                """.trimIndent()
+            } else {
+                ""
+            }
+            
+            // Create file with initial content
             if (newFile.createNewFile()) {
-                val newTopic = TopicFile(finalName, "", newFile)
+                newFile.writeText(initialContent)
+                val newTopic = TopicFile(finalName, initialContent, newFile)
                 topics.add(newTopic)
                 adapter.notifyItemInserted(topics.size - 1)
                 
