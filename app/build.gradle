@@ -12,13 +12,13 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     namespace 'com.postangel.screenshare'
-    compileSdk 34
-      defaultConfig {          
+    compileSdk 34    
+    defaultConfig {          
         applicationId "com.postangel.screenshare"        
         minSdk 26
         targetSdk 34
-        versionCode 6
-        versionName "0.1.8"
+        versionCode 1
+        versionName "0.1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

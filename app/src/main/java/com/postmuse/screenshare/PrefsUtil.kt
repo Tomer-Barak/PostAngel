@@ -5,21 +5,18 @@ import android.content.SharedPreferences
 
 object PrefsUtil {    
     private const val PREFS_NAME = "PostAngelPrefs"
-    private const val KEY_SERVER_URL = "server_url"
-    private const val DEFAULT_SERVER_URL = "https://api.openai.com/v1/chat/completions" // OpenAI API URL
     private const val KEY_OPENAI_API_KEY = "openai_api_key"
     private const val KEY_DARK_MODE = "dark_mode"
+    
+    // Hardcoded OpenAI API URL - no longer configurable by user
+    const val SERVER_URL = "https://api.openai.com/v1/chat/completions"
     
     private fun getPrefs(context: Context): SharedPreferences {
         return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
     }
     
     fun getServerUrl(context: Context): String {
-        return getPrefs(context).getString(KEY_SERVER_URL, DEFAULT_SERVER_URL) ?: DEFAULT_SERVER_URL
-    }
-    
-    fun setServerUrl(context: Context, serverUrl: String) {
-        getPrefs(context).edit().putString(KEY_SERVER_URL, serverUrl).apply()
+        return SERVER_URL
     }
       fun getOpenAIApiKey(context: Context): String {
         return getPrefs(context).getString(KEY_OPENAI_API_KEY, "") ?: ""

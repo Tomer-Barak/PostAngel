@@ -17,35 +17,15 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="24dp"/>
-
-    <TextView
-        android:id="@+id/serverUrlLabelTextView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/server_url"
-        android:textSize="16sp"
-        app:layout_constraintTop_toBottomOf="@id/settingsTitleTextView"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginTop="32dp"/>
-
-    <EditText
-        android:id="@+id/serverUrlEditText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/enter_server_url"
-        android:inputType="textUri"
-        app:layout_constraintTop_toBottomOf="@id/serverUrlLabelTextView"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginTop="8dp"/>
-    <include
+        android:layout_marginTop="24dp"/>    
+        <include
         android:id="@+id/apiKeySecurityCard"
         layout="@layout/secure_api_key_card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/serverUrlEditText"
+        app:layout_constraintTop_toBottomOf="@id/settingsTitleTextView"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginTop="16dp"/>            
+        android:layout_marginTop="32dp"/>
         <!-- Appearance section -->
         <TextView
             android:id="@+id/appearanceTextView"

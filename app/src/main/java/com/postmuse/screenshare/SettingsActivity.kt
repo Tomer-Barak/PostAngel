@@ -14,18 +14,15 @@ import androidx.appcompat.widget.SwitchCompat
 import java.io.File
 
 class SettingsActivity : AppCompatActivity() {        
-    private lateinit var serverUrlEditText: EditText    
     private lateinit var secureApiKeyEditText: SecureApiKeyEditText
     private lateinit var saveButton: Button
     private lateinit var privacyPolicyLink: TextView
     private lateinit var apiSecurityInfoButton: ImageButton
     private lateinit var learnMoreLink: TextView
-    private lateinit var darkModeSwitch: SwitchCompat
-      override fun onCreate(savedInstanceState: Bundle?) {
+    private lateinit var darkModeSwitch: SwitchCompat      
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_settings)        // Initialize UI elements
-        serverUrlEditText = findViewById(R.id.serverUrlEditText)
-        
+        setContentView(R.layout.activity_settings)        
         // Get the secure API key card view
         val apiKeyCardView = findViewById<View>(R.id.apiKeySecurityCard)
         secureApiKeyEditText = apiKeyCardView.findViewById(R.id.secureApiKeyEditText)
@@ -66,11 +63,9 @@ class SettingsActivity : AppCompatActivity() {
         }
     }    private fun loadSettings() {
         // Load the settings from preferences
-        val serverUrl = PrefsUtil.getServerUrl(this)
         val apiKey = SecureKeyStore.getOpenAIApiKey(this)
         val isDarkModeEnabled = PrefsUtil.isDarkModeEnabled(this)
         
-        serverUrlEditText.setText(serverUrl)
         secureApiKeyEditText.setText(apiKey)
         darkModeSwitch.isChecked = isDarkModeEnabled
         
@@ -94,14 +89,7 @@ class SettingsActivity : AppCompatActivity() {
         // We need to recreate the activity to apply the theme changes fully
         recreate()
     }private fun saveSettings() {
-        val serverUrl = serverUrlEditText.text.toString().trim()
         val apiKey = secureApiKeyEditText.getText().trim()
-        
-        // Validate URL (basic validation)
-        if (serverUrl.isEmpty()) {
-            Toast.makeText(this, getString(R.string.server_url_required), Toast.LENGTH_SHORT).show()
-            return
-        }
         
         // Validate API key (basic validation)
         if (apiKey.isEmpty()) {
@@ -119,9 +107,7 @@ class SettingsActivity : AppCompatActivity() {
                 // Optionally show a toast to the user
                 Toast.makeText(this, "Could not create Topics directory", Toast.LENGTH_SHORT).show()
             }
-        }
-        // *** End Added ***        // Save the settings
-        PrefsUtil.setServerUrl(this, serverUrl)
+        }        // *** End Added ***        // Save the settings
         SecureKeyStore.setOpenAIApiKey(this, apiKey)
         PrefsUtil.setDarkModeEnabled(this, darkModeSwitch.isChecked)
         Toast.makeText(this, getString(R.string.settings_saved), Toast.LENGTH_SHORT).show()
