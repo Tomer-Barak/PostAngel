@@ -87,11 +87,11 @@
                 app:layout_constraintTop_toBottomOf="@+id/topicsDescriptionTextView" />
                 
             <TextView
-                android:id="@+id/apiKeyDescriptionTextView"
+                android:id="@+id/apiKeyDescriptionTextView"                
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:text="Posts are generated using OpenAI API. Insert a valid API key in the settings."
+                android:text="Posts are generated using AI. Insert a valid API key in the settings."
                 android:textAlignment="center"
                 android:padding="8dp"
                 app:layout_constraintLeft_toLeftOf="parent"

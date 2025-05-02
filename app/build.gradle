@@ -12,13 +12,13 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     namespace 'com.postangel.screenshare'
-    compileSdk 34    
+    compileSdk 34      
     defaultConfig {          
         applicationId "com.postangel.screenshare"        
         minSdk 26
         targetSdk 34
-        versionCode 1
-        versionName "0.1.0"
+        versionCode 2
+        versionName "0.2.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -60,6 +60,31 @@ android {
     kotlinOptions {
         jvmTarget = '17'
     }
+
+    // Add the output of copyReadmeToRaw to the main source set's resources
+    sourceSets {
+        main {
+            resources {
+                srcDirs += file("$buildDir/generated/readme_res")
+            }
+        }
+    }
+}
+
+// Task to copy the root README.md to a generated resources directory
+task copyReadmeToRaw(type: Copy) {
+    from "$rootDir/README.md"
+    into "$buildDir/generated/readme_res/raw" // Output to a build directory
+    rename { String fileName ->
+        'readme_content.md'
+    }
+    // This task generates resources for the main source set
+    outputs.dir("$buildDir/generated/readme_res")
+}
+
+// Make sure the copy task runs before resources are processed
+android.applicationVariants.all { variant ->
+    variant.registerGeneratedResFolders(files("$buildDir/generated/readme_res").builtBy(copyReadmeToRaw))
 }
 
 dependencies {
@@ -75,4 +100,7 @@ dependencies {
     
     // Add security library for encrypted storage
     implementation("androidx.security:security-crypto:1.1.0-alpha06")
+
+    // Markwon for Markdown rendering
+    implementation 'io.noties.markwon:core:4.6.2'
 }

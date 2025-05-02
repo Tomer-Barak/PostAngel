@@ -10,11 +10,14 @@
     <string name="settings">Settings</string>
     <string name="server_url">Server URL</string>
     <string name="enter_server_url">Enter server URL</string>
-    <string name="save">Save</string>    <string name="settings_saved">Settings saved successfully</string>    <string name="server_url_required">Server URL is required</string>
+    <string name="save">Save</string>    
+    <string name="settings_saved">Settings saved successfully</string>    
+    <string name="server_url_required">Server URL is required</string>
     <string name="privacy_policy">Privacy Policy</string>
-    <string name="view_privacy_policy">View Privacy Policy</string>
-    <string name="openai_api_key">OpenAI API Key</string>
-    <string name="enter_openai_api_key">Enter your OpenAI API key</string>    <string name="api_key_required">API key is required for image processing</string>
+    <string name="view_privacy_policy">View Privacy Policy</string>    
+    <string name="openai_api_key">API Key</string>
+    <string name="enter_openai_api_key">Enter your API key</string>    
+    <string name="api_key_required">API key is required for image processing</string>
     <string name="processing_image">Processing image with AI...</string>
     <string name="image_processed">Image processed successfully!</string>
       <!-- Topics to promote -->
@@ -30,20 +33,21 @@
     <string name="enter_topic_content">Enter topic content here…</string>
 
     <!-- API Key Security -->
-    <string name="api_key_security_title">API Key Security Information</string>    <string name="api_key_security_explanation">
-        Your API Key is stored securely.\n
-        Your OpenAI API key is encrypted and stored securely on your device using Android\'s EncryptedSharedPreferences. This encryption uses the Android KeyStore system for maximum security.\n\n
-        Client-side only architecture:\n
-        All API requests are made directly from your device to OpenAI. Your API key is never sent to our servers or stored elsewhere.\n\n
-        Complete transparency:\n
-        You can view exactly how your API key is handled in our open-source code at https://github.com/Tomer-Barak/PostAngel. The app code shows that API requests go directly to OpenAI\'s servers with your key.\n\n
-        API key usage:\n
-        Your key is only used for:\n
-        - Text generation with OpenAI\'s API\n
-        - Image analysis with Vision API\n\n
-        Your data stays private:\n
-        Since we don\'t route your API requests through our servers, we never see your data or API key.
-    </string>
+    <string name="api_key_security_title">API Key Security Information</string>    
+    <string name="api_key_security_explanation">**Your API Keys are stored securely.**\n\n
+    **Encryption:**\n
+    Your API keys are encrypted and stored securely on your device using Android\'s EncryptedSharedPreferences. This encryption uses the Android KeyStore system for maximum security.\n\n
+    **Client-side only architecture:**\n
+    All API requests are made directly from your device to the AI service. Your API keys are never sent to our servers or stored elsewhere.\n\n
+    **Complete transparency:**\n
+    You can view exactly how your API keys are handled in our open-source code at [https://github.com/Tomer-Barak/PostAngel](https://github.com/Tomer-Barak/PostAngel). The app code shows that API requests go directly to the API servers with your keys.\n\n
+    **API keys usage:**\n
+    Your keys are only used for:\n
+    - Text generation with language model APIs\n
+    - Image analysis with Vision models\n\n
+    **Your data stays private:**\n
+    Since we don\'t route your API requests through our servers, we never see your data or API key.</string>
+
     <string name="api_key_security_info">API key security info</string>
     <string name="learn_about_security">Learn about API key security</string>   
     <string name="create_post">Create Post</string>
@@ -79,7 +83,42 @@
     <string name="delete_post">Delete</string>
     <string name="post_deleted">Post deleted</string>
     <string name="history_cleared">History cleared</string>
-    <string name="created_with">Created with %s</string>
-    <string name="source_share">From shared post</string>
+    <string name="created_with">Created with %s</string>    <string name="source_share">From shared post</string>
     <string name="source_create">Created manually</string>
+      <!-- Model Settings -->
+    <string name="models_and_api">Models and API Settings</string>
+    <string name="api_url">API URL</string>
+    <string name="default_api_url">https://api.openai.com/v1/chat/completions</string>
+    <string name="api_url_description">The API endpoint URL for chat completions</string>
+      <string name="global_settings">Global API Settings</string>
+    <string name="global_api_key">Global API Key</string>
+    <string name="enter_global_api_key">Enter your API key</string>
+    <string name="global_api_url">Global API URL</string>
+    <string name="use_global_api_key">Use global API key for all models</string>
+    <string name="use_custom_api_keys">Change models and/or custom API keys</string>
+    <string name="global_api_key_description">By default, the global API key will be used for all models. Enable custom API keys to configure different keys for each model.</string>    <string name="models_section">Model Settings</string>
+    <string name="customize_api_settings">Set custom API keys</string>
+    <string name="hide_custom_settings">Hide custom settings</string>
+    <string name="global_api_key_required">Global API key is required when using global settings</string>
+    
+    <string name="vision_model">Vision Model</string>
+    <string name="default_vision_model">gpt-4.1-mini</string>
+    <string name="vision_model_description">The model used to analyze screenshots and extract content</string>
+    <string name="vision_api_url_hint">Custom vision API URL (optional)</string>
+    <string name="vision_api_key_hint">Custom vision API key (optional)</string>
+    
+    <string name="response_model">Response Model</string>
+    <string name="default_response_model">gpt-4o-mini</string>
+    <string name="response_model_description">The model used to generate responses to social media posts</string>
+    <string name="response_api_url_hint">Custom response API URL (optional)</string>
+    <string name="response_api_key_hint">Custom response API key (optional)</string>
+    
+    <string name="post_generation_model">Post Generation Model</string>
+    <string name="default_post_generation_model">gpt-4o-mini</string>
+    <string name="post_generation_model_description">The model used to create new social media posts</string>
+    <string name="post_generation_api_url_hint">Custom post generation API URL (optional)</string>
+    <string name="post_generation_api_key_hint">Custom post generation API key (optional)</string>
+    
+    <string name="reset_to_defaults">Reset to Defaults</string>
+    <string name="models_reset">Models reset to defaults</string>
 </resources>

@@ -341,12 +341,13 @@ class ShareReceiverActivity : AppCompatActivity() {
                  file.delete()
              }
         }
-    }
-    
-    private suspend fun processImageWithVisionAPI(client: OkHttpClient, apiKey: String, base64Image: String): String {
-        val visionUrl = PrefsUtil.SERVER_URL
+    }    private suspend fun processImageWithVisionAPI(client: OkHttpClient, apiKey: String, base64Image: String): String {
+        val visionUrl = PrefsUtil.getVisionApiUrl(this)
+        val visionApiKey = SecureKeyStore.getVisionApiKey(this, PrefsUtil.isUsingGlobalApiKey(this))
+        val effectiveApiKey = if (visionApiKey.isNotEmpty()) visionApiKey else apiKey
+        
         val jsonPayload = JSONObject()
-        jsonPayload.put("model", "gpt-4.1-mini")
+        jsonPayload.put("model", PrefsUtil.getVisionModel(this))
         
         val messagesArray = org.json.JSONArray()
         val userMessage = JSONObject()
@@ -375,9 +376,9 @@ class ShareReceiverActivity : AppCompatActivity() {
         val requestBody = jsonPayload.toString().toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
         
         val request = Request.Builder()
-            .url(visionUrl)
+            .url(visionUrl.toString())
             .post(requestBody)
-            .addHeader("Authorization", "Bearer $apiKey")
+            .addHeader("Authorization", "Bearer $effectiveApiKey")
             .addHeader("Content-Type", "application/json")
             .build()
               client.newCall(request).execute().use { response ->
@@ -515,7 +516,7 @@ class ShareReceiverActivity : AppCompatActivity() {
         postContent: String, 
         topic: Topic
     ): Pair<Boolean, String?> {
-        val analysisUrl = PrefsUtil.SERVER_URL
+        val analysisUrl = PrefsUtil.getServerUrl(this)
         
         val prompt = constructAnalysisPrompt(postContent, topic.name, topic.content)
         
@@ -536,9 +537,8 @@ class ShareReceiverActivity : AppCompatActivity() {
         }
         
         val requestBody = jsonPayload.toString().toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
-        
-        val request = Request.Builder()
-            .url(analysisUrl)
+          val request = Request.Builder()
+            .url(analysisUrl.toString())
             .post(requestBody)
             .addHeader("Authorization", "Bearer $apiKey")
             .addHeader("Content-Type", "application/json")
@@ -664,12 +664,14 @@ class ShareReceiverActivity : AppCompatActivity() {
         // Extract the topic name and content for generation
         val topicPattern = "Topic: ([^\\n]+)".toRegex()
         val topicMatch = topicPattern.find(relevantContext)
-        val topicName = topicMatch?.groupValues?.get(1) ?: "unknown topic"
+        val topicName = topicMatch?.groupValues?.get(1) ?: "unknown topic"        // If we don't have a ready-made response idea, generate one using the LLM
+        val generationUrl = PrefsUtil.getResponseApiUrl(this)
+        val responseApiKey = SecureKeyStore.getResponseApiKey(this, PrefsUtil.isUsingGlobalApiKey(this))
+        // Use the response-specific API key if available, otherwise fall back to the legacy key
+        val effectiveApiKey = if (responseApiKey.isNotEmpty()) responseApiKey else apiKey
         
-        // If we don't have a ready-made response idea, generate one using the LLM
-        val generationUrl = PrefsUtil.SERVER_URL
         val jsonPayload = JSONObject().apply {
-            put("model", "gpt-4o-mini")
+            put("model", PrefsUtil.getResponseModel(this@ShareReceiverActivity))
               put("messages", org.json.JSONArray().apply {
                 put(JSONObject().apply {
                     put("role", "system")
@@ -694,10 +696,11 @@ class ShareReceiverActivity : AppCompatActivity() {
         }
         
         val requestBody = jsonPayload.toString().toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
+        
         val request = Request.Builder()
-            .url(generationUrl)
+            .url(generationUrl.toString())
             .post(requestBody)
-            .addHeader("Authorization", "Bearer $apiKey")
+            .addHeader("Authorization", "Bearer $effectiveApiKey")
             .addHeader("Content-Type", "application/json")
             .build()
               try {

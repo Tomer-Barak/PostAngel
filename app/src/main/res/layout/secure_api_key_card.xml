@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- 
+    DEPRECATED: This card has been replaced by the model settings card.
+    The functionality has been integrated into the global API settings section.
+    This file is kept for reference only.
+-->
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/apiKeySecurityCard"
