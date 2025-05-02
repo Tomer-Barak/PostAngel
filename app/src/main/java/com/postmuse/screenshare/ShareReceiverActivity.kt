@@ -344,7 +344,7 @@ class ShareReceiverActivity : AppCompatActivity() {
     }
     
     private suspend fun processImageWithVisionAPI(client: OkHttpClient, apiKey: String, base64Image: String): String {
-        val visionUrl = "https://api.openai.com/v1/chat/completions"
+        val visionUrl = PrefsUtil.SERVER_URL
         val jsonPayload = JSONObject()
         jsonPayload.put("model", "gpt-4.1-mini")
         
@@ -515,7 +515,7 @@ class ShareReceiverActivity : AppCompatActivity() {
         postContent: String, 
         topic: Topic
     ): Pair<Boolean, String?> {
-        val analysisUrl = "https://api.openai.com/v1/chat/completions"
+        val analysisUrl = PrefsUtil.SERVER_URL
         
         val prompt = constructAnalysisPrompt(postContent, topic.name, topic.content)
         
@@ -667,7 +667,7 @@ class ShareReceiverActivity : AppCompatActivity() {
         val topicName = topicMatch?.groupValues?.get(1) ?: "unknown topic"
         
         // If we don't have a ready-made response idea, generate one using the LLM
-        val generationUrl = "https://api.openai.com/v1/chat/completions"
+        val generationUrl = PrefsUtil.SERVER_URL
         val jsonPayload = JSONObject().apply {
             put("model", "gpt-4o-mini")
               put("messages", org.json.JSONArray().apply {

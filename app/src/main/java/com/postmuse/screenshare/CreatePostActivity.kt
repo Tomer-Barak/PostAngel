@@ -219,7 +219,7 @@ class CreatePostActivity : AppCompatActivity() {
         val requestBody = jsonPayload.toString().toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
         
         val request = Request.Builder()
-            .url("https://api.openai.com/v1/chat/completions")
+            .url(PrefsUtil.SERVER_URL)
             .post(requestBody)
             .addHeader("Authorization", "Bearer $apiKey")
             .addHeader("Content-Type", "application/json")
