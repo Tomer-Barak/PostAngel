@@ -57,7 +57,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Your API key is stored securely and used only for direct API calls from your device."
+            android:text="Your API keys are stored securely and used only for direct API calls from your device."
             android:textSize="12sp"
             android:textColor="#757575"
             android:layout_marginTop="4dp" />

@@ -17,7 +17,7 @@ You can download the app directly from:
 - PostDemon feature: Activates in dark mode to provide more sarcastic post suggestions
 - Uses Vision models to analyze screenshots of social media posts
 - Uses language models to create contextual responses and posts
-- Configurable settings for your API key
+- Configurable settings for your API keys
 - Maintain a personal knowledge base of topics you want to promote
 - Open source and privacy-focused
 
@@ -26,7 +26,7 @@ You can download the app directly from:
 1. Clone this repository
 2. Open the project in Android Studio
 3. Build and run the application on your device
-4. You'll need to set up your API key in the Settings screen
+4. You'll need to set up your API keys in the Settings screen
 5. Configure your knowledge base by adding topics you want to promote
 6. By default, the app will use AI vision and language models API
 

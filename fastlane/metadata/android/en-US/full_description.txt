@@ -9,7 +9,7 @@ Features:
 * Uses language models to create contextual responses and posts
 * Support for custom API providers and models
 * Markdown formatting support
-* Configurable settings for your API key
+* Configurable settings for your API keys
 * Maintain a personal knowledge base of topics you want to promote
 * Open source and privacy-focused
 

@@ -9,16 +9,16 @@
             <h2>What We Collect</h2>
             <ul>                <li><strong>Images:</strong> Only the images you explicitly share with the app are processed using AI services.</li>
                 <li><strong>Server URL:</strong> The URL you configure is stored locally on your device.</li>
-                <li><strong>API Key:</strong> Your API key is securely encrypted and stored only on your device.</li>
+                <li><strong>API Key:</strong> Your API keys are securely encrypted and stored only on your device.</li>
                 <li><strong>Network status:</strong> Basic connectivity information.</li>
             </ul>
             <h2>How We Use Your Data</h2>
             <p>We only use your data to process images via AI services using your own API key. Images and API keys are not stored by us.</p>
             
             <h2>Security</h2>
-            <p>Your API key is securely encrypted using Android\'s KeyStore system and EncryptedSharedPreferences. All communications with AI service servers are encrypted using HTTPS protocols.</p>
+            <p>Your API keys are securely encrypted using Android\'s KeyStore system and EncryptedSharedPreferences. All communications with AI service servers are encrypted using HTTPS protocols.</p>
             <h2>Your Control</h2>
-            <p>You have complete control over which images to share and how your API key is used. Your API key never leaves your device except to make direct API calls. You can view detailed information about API key security in the app settings.</p>
+            <p>You have complete control over which images to share. Your API keys never leaves your device except to make direct API calls. You can view detailed information about API keys security in the app settings.</p>
             
             <h2>Contact</h2>
             <p>For questions about this policy, please contact: tomer.barak.mail@gmail.com</p>

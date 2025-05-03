@@ -63,7 +63,7 @@
     <string name="refresh_response">Try Another Response</string>
     
     <!-- Dark Mode -->
-    <string name="dark_mode">Dark Mode / PostDemon</string>
+    <string name="dark_mode">Dark Mode (PostDemon)</string>
     <string name="dark_mode_description">Enable dark theme and PostDemon mode</string>
     <string name="appearance">Appearance</string>
       <!-- App Mode Strings -->
