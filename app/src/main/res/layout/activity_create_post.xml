@@ -51,7 +51,7 @@
         android:id="@+id/specialInstructionsEditText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:hint="Enter any special instructions for your post"
+        android:hint="Enter special instructions for your post generation"
         android:minLines="1"
         android:gravity="top"
         android:inputType="textMultiLine"
