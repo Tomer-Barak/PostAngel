@@ -269,27 +269,27 @@ class KnowledgeBaseActivity : AppCompatActivity() {    companion object {
     var markdownCreated = false
 
     // Create text sample first
-    try {
-        val sampleTextFile = File(topicsDir, "Sample Topic.txt")
-        sampleTextFile.writeText(
-            """
-            This is a sample topic file.
+    // try {
+    //     val sampleTextFile = File(topicsDir, "Sample Topic.txt")
+    //     sampleTextFile.writeText(
+    //         """
+    //         This is a sample topic file.
             
-            In your topic files, you should include information about products,
-            services, or ideas that you want to promote when relevant opportunities
-            arise on social media.
+    //         In your topic files, you should include information about products,
+    //         services, or ideas that you want to promote when relevant opportunities
+    //         arise on social media.
             
-            The app will analyze social media posts you share and suggest responses
-            based on the content in these topic files when there's a relevant match.
+    //         The app will analyze social media posts you share and suggest responses
+    //         based on the content in these topic files when there's a relevant match.
             
-            You can edit this file or create new ones to customize the knowledge base.
-            """.trimIndent()
-        )
-        textCreated = sampleTextFile.exists() && sampleTextFile.length() > 0
-        Log.d(TAG, "Text sample creation ${if (textCreated) "successful" else "failed"}")
-    } catch (e: Exception) {
-        Log.e(TAG, "Failed to create text sample", e)
-    }
+    //         You can edit this file or create new ones to customize the knowledge base.
+    //         """.trimIndent()
+    //     )
+    //     textCreated = sampleTextFile.exists() && sampleTextFile.length() > 0
+    //     Log.d(TAG, "Text sample creation ${if (textCreated) "successful" else "failed"}")
+    // } catch (e: Exception) {
+    //     Log.e(TAG, "Failed to create text sample", e)
+    // }
 
     
     // Try to create markdown sample

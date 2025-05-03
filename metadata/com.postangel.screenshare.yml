@@ -40,8 +40,15 @@ RepoType: git
 Repo: https://github.com/Tomer-Barak/PostAngel.git
 
 Builds:
-  - versionName: "0.2.0" # Matches app/build.gradle
-    versionCode: 2     # Matches app/build.gradle
+  - versionName: "0.2.1" # Matches app/build.gradle
+    versionCode: 3     # Matches app/build.gradle
+    commit: v0.2.1
+    subdir: app
+    gradle:
+      - yes # Use Gradle wrapper
+      
+  - versionName: "0.2.0" # Previous version
+    versionCode: 2
     commit: v0.2.0
     subdir: app
     gradle:
