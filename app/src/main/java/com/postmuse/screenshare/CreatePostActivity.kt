@@ -21,6 +21,7 @@ import java.io.IOException
 import com.postangel.screenshare.ModeHelper
 import com.postangel.screenshare.PostHistoryEntry
 import com.postangel.screenshare.PostHistoryManager
+import com.postangel.screenshare.TemporaryModeManager
 
 class CreatePostActivity : AppCompatActivity() {    
     private lateinit var topicSpinner: Spinner
@@ -28,14 +29,18 @@ class CreatePostActivity : AppCompatActivity() {
     private lateinit var generateButton: Button
     private lateinit var generatedPostView: TextView
     private lateinit var copyButton: Button
+    private lateinit var toggleModeButton: Button
 
     private val TAG = "CreatePostActivity"
+    
+    // Cache the last topic, instructions and generated post for toggle mode feature
+    private var lastSelectedTopic: String? = null
+    private var lastSpecialInstructions: String = ""
+    private var usingAlternateMode = false
 
     companion object {
         const val TOPICS_DIR_NAME = "Topics" // Directory for topics
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
+    }    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_post)        // Initialize views
         topicSpinner = findViewById(R.id.topicSpinner)
@@ -43,16 +48,33 @@ class CreatePostActivity : AppCompatActivity() {
         generateButton = findViewById(R.id.generatePostButton)
         generatedPostView = findViewById(R.id.generatedPostTextView)
         copyButton = findViewById(R.id.copyPostButton)
+        toggleModeButton = findViewById(R.id.toggleModeButton)
 
-        // Initially hide copy button
+        // Initially hide buttons
         copyButton.visibility = View.GONE
+        toggleModeButton.visibility = View.GONE
+        
+        // Set the title based on current mode
+        title = if (ModeHelper.isDarkModeActive(this)) {
+            getString(R.string.mode_demon)
+        } else {
+            getString(R.string.mode_angel)
+        }
+        
+        // Initialize UI for current mode
+        updateToggleModeButtonText()
 
         // Load topics into spinner
-        loadTopics()        // Set up click listeners        
+        loadTopics()// Set up click listeners        
         generateButton.setOnClickListener {
             val selectedTopic = topicSpinner.selectedItem?.toString()
             if (selectedTopic != null) {
                 val specialInstructions = specialInstructionsEditText.text.toString().trim()
+                
+                // Cache the selections for toggle mode feature
+                lastSelectedTopic = selectedTopic
+                lastSpecialInstructions = specialInstructions
+                
                 lifecycleScope.launch {
                     generatePost(selectedTopic, specialInstructions)
                 }
@@ -65,6 +87,61 @@ class CreatePostActivity : AppCompatActivity() {
             val clip = ClipData.newPlainText("Generated Post", generatedPostView.text)
             clipboard.setPrimaryClip(clip)
             Toast.makeText(this, "Post copied to clipboard", Toast.LENGTH_SHORT).show()
+        }
+        
+        // Set up toggle mode button
+        updateToggleModeButtonText()
+        toggleModeButton.setOnClickListener {
+            togglePostMode()
+        }
+    }
+
+    // Update toggle mode button text based on current mode
+    private fun updateToggleModeButtonText() {
+        val currentMode = ModeHelper.isDarkModeActive(this)
+        if (currentMode) {
+            // Currently in dark mode, show option for light mode
+            toggleModeButton.text = getString(R.string.analyze_with_angel)
+        } else {
+            // Currently in light mode, show option for dark mode
+            toggleModeButton.text = getString(R.string.analyze_with_demon)
+        }
+    }
+    
+    // Toggle between PostAngel and PostDemon modes
+    private fun togglePostMode() {
+        if (lastSelectedTopic == null) {
+            // Can't toggle if no post has been generated
+            val errorMsg = if (ModeHelper.isDarkModeActive(this)) {
+                "Generate a post first, then try switching modes. Don't be lazy."
+            } else {
+                "Please generate a post first before switching modes."
+            }
+            Toast.makeText(this, errorMsg, Toast.LENGTH_SHORT).show()
+            return
+        }
+        
+        // Toggle temporary mode
+        val isDarkMode = TemporaryModeManager.toggleTemporaryMode(this)
+        usingAlternateMode = true
+        
+        // Update UI elements
+        updateToggleModeButtonText()
+        setResponseBackgroundForCurrentMode()
+        
+        // Show loading state
+        generateButton.isEnabled = false
+        val modeChangeMsg = if (isDarkMode) {
+            "Switching to PostDemon mode for sarcastic content..."
+        } else {
+            "Switching to PostAngel mode for helpful content..."
+        }
+        generatedPostView.text = modeChangeMsg
+        copyButton.visibility = View.GONE
+        
+        // Regenerate post with the new mode
+        lifecycleScope.launch {
+            generatePost(lastSelectedTopic!!, lastSpecialInstructions)
         }
     }
 
@@ -118,6 +195,18 @@ class CreatePostActivity : AppCompatActivity() {
             generateButton.isEnabled = false
             generatedPostView.text = "Generating post..."
             copyButton.visibility = View.GONE
+            toggleModeButton.visibility = View.GONE
+            
+            // Apply appropriate background color for the current mode
+            setResponseBackgroundForCurrentMode()
+            
+            // Show mode-specific loading message
+            val isDarkMode = ModeHelper.isDarkModeActive(this@CreatePostActivity)
+            generatedPostView.text = if (isDarkMode) {
+                "Crafting a sarcastic PostDemon message..."
+            } else {
+                "Creating a helpful PostAngel message..."
+            }
         }
 
         // Get API key
@@ -140,6 +229,10 @@ class CreatePostActivity : AppCompatActivity() {
                         // Display the generated post
                         generatedPostView.text = generatedPost
                         copyButton.visibility = View.VISIBLE
+                        toggleModeButton.visibility = View.VISIBLE
+                        
+                        // Set the background color based on the current mode
+                        setResponseBackgroundForCurrentMode()
                         
                         // Save post to history with current mode and source
                         val isDarkMode = ModeHelper.isDarkModeActive(this@CreatePostActivity)
@@ -166,7 +259,23 @@ class CreatePostActivity : AppCompatActivity() {
                 showError("Error: ${e.message}")
             }
         }
-    }    private fun getTopicDescription(topic: String): String {
+    }    
+    
+    private fun setResponseBackgroundForCurrentMode() {
+        val isDarkMode = ModeHelper.isDarkModeActive(this)
+        
+        if (isDarkMode) {
+            // Dark mode (PostDemon)
+            generatedPostView.setBackgroundColor(resources.getColor(R.color.background_dark, theme))
+            generatedPostView.setTextColor(resources.getColor(R.color.on_background_dark, theme))
+        } else {
+            // Light mode (PostAngel)
+            generatedPostView.setBackgroundColor(resources.getColor(R.color.background_light, theme))
+            generatedPostView.setTextColor(resources.getColor(R.color.on_background, theme))
+        }
+    }
+    
+    private fun getTopicDescription(topic: String): String {
         // Try with .txt extension first
         val txtFile = File(filesDir, "$TOPICS_DIR_NAME/${topic}.txt")
         if (txtFile.exists()) {
@@ -293,14 +402,47 @@ class CreatePostActivity : AppCompatActivity() {
         
         // Modify the prompt based on current mode
         return ModeHelper.modifyPostGenerationPrompt(this, basePrompt)
-    }
-
-    private suspend fun showError(message: String) {
+    }    private suspend fun showError(message: String) {
         withContext(Dispatchers.Main) {
-            generatedPostView.text = message
+            // Format error message based on current mode
+            val errorPrefix = if (ModeHelper.isDarkModeActive(this@CreatePostActivity)) {
+                "Error: "
+            } else {
+                "Sorry, an error occurred: "
+            }
+            
+            generatedPostView.text = errorPrefix + message
             generateButton.isEnabled = true
             copyButton.visibility = View.GONE
+            toggleModeButton.visibility = View.GONE
+            
+            // Keep background color consistent with current mode
+            setResponseBackgroundForCurrentMode()
+            
             Toast.makeText(this@CreatePostActivity, message, Toast.LENGTH_LONG).show()
         }
-    }    // Menu options removed as history is now accessible from the main activity
+    }
+    
+    override fun onResume() {
+        super.onResume()
+        
+        // Update the title based on current mode
+        title = if (ModeHelper.isDarkModeActive(this)) {
+            getString(R.string.mode_demon)
+        } else {
+            getString(R.string.mode_angel)
+        }
+        
+        // Reset temporary mode when returning to this activity
+        if (usingAlternateMode) {
+            TemporaryModeManager.clearTemporaryMode()
+            usingAlternateMode = false
+        }
+        
+        // Update UI based on current mode
+        updateToggleModeButtonText()
+        if (generatedPostView.text.isNotBlank() && generatedPostView.text != "Generating post...") {
+            setResponseBackgroundForCurrentMode()
+        }
+    }
 }

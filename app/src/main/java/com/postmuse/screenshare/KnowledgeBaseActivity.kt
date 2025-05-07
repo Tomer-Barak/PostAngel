@@ -566,17 +566,13 @@ private fun createFallbackMarkdownSample() {
         // Show a dialog to choose between different import options
         AlertDialog.Builder(this)
             .setTitle("Import Options")
-            .setItems(arrayOf("Select Text Files", "Select Folder", "Select Any File")) { _, which ->
+            .setItems(arrayOf("Select Folder", "Select File")) { _, which ->
                 when (which) {
                     0 -> {
-                        // For text files only
-                        filePickerLauncher.launch("text/*")
-                    }
-                    1 -> {
                         // For folder selection - requires ACTION_OPEN_DOCUMENT_TREE
                         folderPickerLauncher.launch(null)
                     }
-                    2 -> {
+                    1 -> {
                         // For all files - we'll filter for supported types later
                         filePickerLauncher.launch("*/*")
                     }

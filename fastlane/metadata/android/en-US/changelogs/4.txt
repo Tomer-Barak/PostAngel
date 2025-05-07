@@ -1,0 +1,8 @@
+New Features:
+- Added toggle mode button in Create Post screen that allows switching between PostAngel and PostDemon modes
+- Posts can now be regenerated in the opposite mode without changing app-wide settings
+- Background color changes to reflect current mode (light/dark)
+
+Improvements:
+- Better UI consistency between Create Post and Share Receiver activities
+- Fixed bug where initial post creation didn't respect the current app mode (PostAngel/PostDemon)

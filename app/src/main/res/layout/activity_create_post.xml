@@ -88,11 +88,22 @@
         android:layout_marginTop="24dp"/>
 
     <Button
+        android:id="@+id/toggleModeButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/analyze_with_demon"
+        app:layout_constraintTop_toBottomOf="@id/generatedPostTextView"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginTop="16dp"
+        android:visibility="gone"/>
+
+    <Button
         android:id="@+id/copyPostButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Copy Post"
-        app:layout_constraintTop_toBottomOf="@id/generatedPostTextView"
+        app:layout_constraintTop_toBottomOf="@id/toggleModeButton"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         android:layout_marginTop="16dp"
