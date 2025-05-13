@@ -33,7 +33,7 @@ class CreatePostActivity : AppCompatActivity() {
     private lateinit var toggleButtonsLayout: LinearLayout
     private lateinit var platformRadioGroup: RadioGroup
     private lateinit var radioX: RadioButton
-    private lateinit var radioLinkedIn: RadioButton    
+    private lateinit var radioLinkedIn: RadioButton
     private val TAG = "CreatePostActivity"
     
     // Cache the last topic, instructions and generated post for toggle features
@@ -57,9 +57,10 @@ class CreatePostActivity : AppCompatActivity() {
         radioX = findViewById(R.id.radioX)
         radioLinkedIn = findViewById(R.id.radioLinkedIn)
 
-        // Initially hide buttons
+        // Initially hide buttons and response area
         copyButton.visibility = View.GONE
         toggleButtonsLayout.visibility = View.GONE
+        generatedPostView.visibility = View.GONE
         
         // Set the title based on current mode
         title = if (ModeHelper.isDarkModeActive(this)) {
@@ -223,6 +224,11 @@ class CreatePostActivity : AppCompatActivity() {
             copyButton.visibility = View.GONE
             toggleButtonsLayout.visibility = View.GONE // Hide the entire layout instead of just one button
             
+            // Show the TextView if it's not visible
+            if (generatedPostView.visibility != View.VISIBLE) {
+                generatedPostView.visibility = View.VISIBLE
+            }
+            
             // Apply appropriate background color for the current mode
             setResponseBackgroundForCurrentMode()
             
@@ -249,12 +255,16 @@ class CreatePostActivity : AppCompatActivity() {
                     return@withContext
                 }
 
-                val generatedPost = generatePromotionalTweet(apiKey, topic, topicContent, specialInstructions)
-                  withContext(Dispatchers.Main) {                    if (generatedPost != null) {
+                val generatedPost = generatePromotionalTweet(apiKey, topic, topicContent, specialInstructions)                    
+                withContext(Dispatchers.Main) {                    
+                    if (generatedPost != null) {
                         // Display the generated post
                         generatedPostView.text = generatedPost
                         copyButton.visibility = View.VISIBLE
                         toggleButtonsLayout.visibility = View.VISIBLE
+                        
+                        // Make sure the TextView is visible
+                        generatedPostView.visibility = View.VISIBLE
                         
                         // Set the background color based on the current mode
                         setResponseBackgroundForCurrentMode()
