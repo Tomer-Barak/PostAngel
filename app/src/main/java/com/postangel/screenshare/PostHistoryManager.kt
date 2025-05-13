@@ -25,13 +25,14 @@ object PostHistoryManager {
     private const val JSON_TIMESTAMP = "timestamp"
     private const val JSON_IS_DARK_MODE = "is_dark_mode"
     private const val JSON_SOURCE = "source"
+    private const val JSON_EXTRA_INFO = "extra_info"
 
     private val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.US)
 
     /**
      * Save a post to the history
      */
-    fun savePost(context: Context, content: String, isDarkMode: Boolean, source: String) {
+    fun savePost(context: Context, content: String, isDarkMode: Boolean, source: String, extraInfo: String = "") {
         try {
             // Create a new history entry
             val entry = PostHistoryEntry(
@@ -39,7 +40,8 @@ object PostHistoryManager {
                 content = content,
                 timestamp = Date(),
                 isDarkMode = isDarkMode,
-                source = source
+                source = source,
+                extraInfo = extraInfo
             )
 
             // Get existing posts
@@ -72,8 +74,7 @@ object PostHistoryManager {
         return try {
             val postsArray = JSONArray(postsJson)
             val result = mutableListOf<PostHistoryEntry>()
-            
-            for (i in 0 until postsArray.length()) {
+              for (i in 0 until postsArray.length()) {
                 val postObj = postsArray.getJSONObject(i)
                 try {
                     val entry = PostHistoryEntry(
@@ -81,7 +82,8 @@ object PostHistoryManager {
                         content = postObj.getString(JSON_CONTENT),
                         timestamp = dateFormat.parse(postObj.getString(JSON_TIMESTAMP)) ?: Date(),
                         isDarkMode = postObj.getBoolean(JSON_IS_DARK_MODE),
-                        source = postObj.optString(JSON_SOURCE, PostHistoryEntry.SOURCE_SHARE)
+                        source = postObj.optString(JSON_SOURCE, PostHistoryEntry.SOURCE_SHARE),
+                        extraInfo = postObj.optString(JSON_EXTRA_INFO, "")
                     )
                     result.add(entry)
                 } catch (e: Exception) {
@@ -129,13 +131,16 @@ object PostHistoryManager {
     private fun savePosts(context: Context, posts: List<PostHistoryEntry>) {
         val jsonArray = JSONArray()
         
-        posts.forEach { entry ->
-            val jsonObject = JSONObject().apply {
+        posts.forEach { entry ->            
+        val jsonObject = JSONObject().apply {
                 put(JSON_ID, entry.id)
                 put(JSON_CONTENT, entry.content)
                 put(JSON_TIMESTAMP, dateFormat.format(entry.timestamp))
                 put(JSON_IS_DARK_MODE, entry.isDarkMode)
                 put(JSON_SOURCE, entry.source)
+                if (entry.extraInfo.isNotEmpty()) {
+                    put(JSON_EXTRA_INFO, entry.extraInfo)
+                }
             }
             jsonArray.put(jsonObject)
         }

@@ -121,4 +121,10 @@
     
     <string name="reset_to_defaults">Reset to Defaults</string>
     <string name="models_reset">Models reset to defaults</string>
+    
+    <!-- Platform Selection -->
+    <string name="switch_to_linkedin">Switch to LinkedIn</string>
+    <string name="switch_to_x">Switch to X</string>
+    <string name="platform_linkedin">LinkedIn</string>
+    <string name="platform_x">X</string>
 </resources>

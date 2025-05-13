@@ -23,17 +23,20 @@ import com.postangel.screenshare.PostHistoryEntry
 import com.postangel.screenshare.PostHistoryManager
 import com.postangel.screenshare.TemporaryModeManager
 
-class CreatePostActivity : AppCompatActivity() {    
+class CreatePostActivity : AppCompatActivity() {      
     private lateinit var topicSpinner: Spinner
     private lateinit var specialInstructionsEditText: EditText
     private lateinit var generateButton: Button
     private lateinit var generatedPostView: TextView
     private lateinit var copyButton: Button
     private lateinit var toggleModeButton: Button
-
+    private lateinit var toggleButtonsLayout: LinearLayout
+    private lateinit var platformRadioGroup: RadioGroup
+    private lateinit var radioX: RadioButton
+    private lateinit var radioLinkedIn: RadioButton    
     private val TAG = "CreatePostActivity"
     
-    // Cache the last topic, instructions and generated post for toggle mode feature
+    // Cache the last topic, instructions and generated post for toggle features
     private var lastSelectedTopic: String? = null
     private var lastSpecialInstructions: String = ""
     private var usingAlternateMode = false
@@ -44,15 +47,19 @@ class CreatePostActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_post)        // Initialize views
         topicSpinner = findViewById(R.id.topicSpinner)
-        specialInstructionsEditText = findViewById(R.id.specialInstructionsEditText)
+        specialInstructionsEditText = findViewById(R.id.specialInstructionsEditText)        
         generateButton = findViewById(R.id.generatePostButton)
         generatedPostView = findViewById(R.id.generatedPostTextView)
         copyButton = findViewById(R.id.copyPostButton)
         toggleModeButton = findViewById(R.id.toggleModeButton)
+        toggleButtonsLayout = findViewById(R.id.toggleButtonsLayout)
+        platformRadioGroup = findViewById(R.id.platformRadioGroup)
+        radioX = findViewById(R.id.radioX)
+        radioLinkedIn = findViewById(R.id.radioLinkedIn)
 
         // Initially hide buttons
         copyButton.visibility = View.GONE
-        toggleModeButton.visibility = View.GONE
+        toggleButtonsLayout.visibility = View.GONE
         
         // Set the title based on current mode
         title = if (ModeHelper.isDarkModeActive(this)) {
@@ -61,7 +68,9 @@ class CreatePostActivity : AppCompatActivity() {
             getString(R.string.mode_angel)
         }
         
-        // Initialize UI for current mode
+        // Set initial platform radio button selection based on saved preference
+        setInitialPlatformSelection()
+          // Initialize UI for current mode
         updateToggleModeButtonText()
 
         // Load topics into spinner
@@ -71,7 +80,7 @@ class CreatePostActivity : AppCompatActivity() {
             if (selectedTopic != null) {
                 val specialInstructions = specialInstructionsEditText.text.toString().trim()
                 
-                // Cache the selections for toggle mode feature
+                // Cache the selections for toggle features
                 lastSelectedTopic = selectedTopic
                 lastSpecialInstructions = specialInstructions
                 
@@ -88,15 +97,31 @@ class CreatePostActivity : AppCompatActivity() {
             clipboard.setPrimaryClip(clip)
             Toast.makeText(this, "Post copied to clipboard", Toast.LENGTH_SHORT).show()
         }
-        
-        // Set up toggle mode button
+          // Set up toggle mode button
         updateToggleModeButtonText()
         toggleModeButton.setOnClickListener {
             togglePostMode()
         }
+        
+        // Set up platform radio group listener
+        platformRadioGroup.setOnCheckedChangeListener { _, checkedId ->
+            val platform = when (checkedId) {
+                R.id.radioLinkedIn -> PrefsUtil.PLATFORM_LINKEDIN
+                else -> PrefsUtil.PLATFORM_X
+            }
+            PrefsUtil.setSocialMediaPlatform(this, platform)
+        }
     }
 
-    // Update toggle mode button text based on current mode
+    // Set initial platform radio button selection based on saved preference
+    private fun setInitialPlatformSelection() {
+        val savedPlatform = PrefsUtil.getSocialMediaPlatform(this)
+        if (savedPlatform == PrefsUtil.PLATFORM_LINKEDIN) {
+            radioLinkedIn.isChecked = true
+        } else {
+            radioX.isChecked = true
+        }
+    }    // Update toggle mode button text based on current mode
     private fun updateToggleModeButtonText() {
         val currentMode = ModeHelper.isDarkModeActive(this)
         if (currentMode) {
@@ -107,6 +132,7 @@ class CreatePostActivity : AppCompatActivity() {
             toggleModeButton.text = getString(R.string.analyze_with_demon)
         }
     }
+  
     
     // Toggle between PostAngel and PostDemon modes
     private fun togglePostMode() {
@@ -195,7 +221,7 @@ class CreatePostActivity : AppCompatActivity() {
             generateButton.isEnabled = false
             generatedPostView.text = "Generating post..."
             copyButton.visibility = View.GONE
-            toggleModeButton.visibility = View.GONE
+            toggleButtonsLayout.visibility = View.GONE // Hide the entire layout instead of just one button
             
             // Apply appropriate background color for the current mode
             setResponseBackgroundForCurrentMode()
@@ -224,23 +250,29 @@ class CreatePostActivity : AppCompatActivity() {
                 }
 
                 val generatedPost = generatePromotionalTweet(apiKey, topic, topicContent, specialInstructions)
-                  withContext(Dispatchers.Main) {
-                    if (generatedPost != null) {
+                  withContext(Dispatchers.Main) {                    if (generatedPost != null) {
                         // Display the generated post
                         generatedPostView.text = generatedPost
                         copyButton.visibility = View.VISIBLE
-                        toggleModeButton.visibility = View.VISIBLE
+                        toggleButtonsLayout.visibility = View.VISIBLE
                         
                         // Set the background color based on the current mode
                         setResponseBackgroundForCurrentMode()
                         
-                        // Save post to history with current mode and source
+                        // Save post to history with current mode, platform and source
                         val isDarkMode = ModeHelper.isDarkModeActive(this@CreatePostActivity)
+                        val platform = ModeHelper.getCurrentPlatform(this@CreatePostActivity)
+                        
+                        val extraInfo = JSONObject().apply {
+                            put("platform", platform)
+                        }.toString()
+                        
                         PostHistoryManager.savePost(
                             context = this@CreatePostActivity,
                             content = generatedPost,
                             isDarkMode = isDarkMode,
-                            source = PostHistoryEntry.SOURCE_CREATE
+                            source = PostHistoryEntry.SOURCE_CREATE,
+                            extraInfo = extraInfo
                         )
                         
                         // Show a toast confirming post was saved to history
@@ -438,8 +470,8 @@ class CreatePostActivity : AppCompatActivity() {
             TemporaryModeManager.clearTemporaryMode()
             usingAlternateMode = false
         }
-        
-        // Update UI based on current mode
+  
+          // Update UI based on current mode
         updateToggleModeButtonText()
         if (generatedPostView.text.isNotBlank() && generatedPostView.text != "Generating post...") {
             setResponseBackgroundForCurrentMode()

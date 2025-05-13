@@ -28,10 +28,17 @@ object PrefsUtil {
     // Key for using global API key setting
     private const val KEY_USE_GLOBAL_API_KEY = "use_global_api_key"
     
+    // Social media platform keys and defaults
+    private const val KEY_SOCIAL_MEDIA_PLATFORM = "social_media_platform"
+    const val PLATFORM_LINKEDIN = "linkedin"
+    const val PLATFORM_X = "x"
+    private const val DEFAULT_PLATFORM = PLATFORM_X
+    
     private fun getPrefs(context: Context): SharedPreferences {
         return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
     }
-      fun getServerUrl(context: Context): String {
+    
+    fun getServerUrl(context: Context): String {
         return getPrefs(context).getString(KEY_API_URL, DEFAULT_API_URL) ?: DEFAULT_API_URL
     }
     
@@ -117,5 +124,14 @@ object PrefsUtil {
     
     fun setDarkModeEnabled(context: Context, enabled: Boolean) {
         getPrefs(context).edit().putBoolean(KEY_DARK_MODE, enabled).apply()
+    }
+    
+    // Social media platform methods
+    fun getSocialMediaPlatform(context: Context): String {
+        return getPrefs(context).getString(KEY_SOCIAL_MEDIA_PLATFORM, DEFAULT_PLATFORM) ?: DEFAULT_PLATFORM
+    }
+    
+    fun setSocialMediaPlatform(context: Context, platform: String) {
+        getPrefs(context).edit().putString(KEY_SOCIAL_MEDIA_PLATFORM, platform).apply()
     }
 }

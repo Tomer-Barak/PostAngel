@@ -14,6 +14,7 @@ You can download the app directly from:
 - Create AI-generated social media posts based on your personal topics
 - Share screenshots of social media posts to get suggested responses
 - Intelligent response generation that promotes your preferred topics when relevant
+- Platform-specific content: Tailored posts for LinkedIn (more elaborate) and X (more catchy)
 - PostDemon feature: Activates in dark mode to provide more sarcastic post suggestions
 - Uses Vision models to analyze screenshots of social media posts
 - Uses language models to create contextual responses and posts
@@ -35,9 +36,10 @@ You can download the app directly from:
 ### For Social Media Post Creation:
 1. Open the app from your app drawer
 2. Select "Create Post" from the main menu
-3. Choose from your list of topics or themes to focus on
-4. The app will generate a social media post based on your topics
-5. Copy the post and share directly to your preferred social media platform
+3. Choose your target platform (LinkedIn or X)
+4. Select from your list of topics or themes to focus on
+5. The app will generate a platform-specific social media post based on your topics
+6. Copy the post and share directly to your selected social media platform
 
 ### For Response Suggestions:
 1. Take a screenshot of a social media post you want to respond to
@@ -87,7 +89,14 @@ PostAngel combines multiple AI capabilities to help users create and respond to 
 1. You select topics from your knowledge base
 2. The app uses language models to craft a social media post
 3. The post is designed to effectively communicate about your selected topics
-4. You can edit the post before sharing it to your preferred platforms
+4. Content is automatically tailored to the specific platform (LinkedIn or X)
+5. You can edit the post before sharing it to your preferred platforms
+
+#### Platform-Specific Content:
+1. LinkedIn content is more elaborate (150-800 characters), detailed and professional
+2. X (Twitter) content is concise (under 280 characters), catchy and optimized for engagement
+3. Hashtag usage is automatically optimized for each platform
+4. You can select your target platform (LinkedIn or X), and the app adapts content accordingly
 
 #### PostDemon Feature:
 1. Automatically detects when your device is using dark mode

@@ -58,15 +58,14 @@ if (-not $?) {
 # Step 5: Push changes and tags to remote
 Write-Host "Do you want to push changes and tags to remote? (y/n)" -ForegroundColor Yellow
 $response = Read-Host
-if ($response -eq "y") {
-    Write-Host "Pushing changes to remote..." -ForegroundColor Green
+if ($response -eq "y") {    Write-Host "Pushing changes to remote..." -ForegroundColor Green
     git push
-    git push --tags
+    git push origin v0.2.2
     if (-not $?) {
         Write-Host "Error pushing to remote!" -ForegroundColor Red
         exit 1
     }
-    Write-Host "Changes and tags successfully pushed to remote!" -ForegroundColor Green
+    Write-Host "Changes and tag v0.2.2 successfully pushed to remote!" -ForegroundColor Green
 } else {
     Write-Host "Skipping push to remote. Don't forget to push manually!" -ForegroundColor Yellow
 }

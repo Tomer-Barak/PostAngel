@@ -40,6 +40,7 @@ class ShareReceiverActivity : AppCompatActivity() {
     private lateinit var copyButton: Button    
     private lateinit var refreshButton: Button // Added refresh button
     private lateinit var toggleModeButton: Button // Added toggle mode button
+    private lateinit var togglePlatformButton: Button // Added toggle platform button
     
     private val TAG = "ShareReceiverActivity"
     
@@ -49,6 +50,8 @@ class ShareReceiverActivity : AppCompatActivity() {
     
     // Flag to track if we're using an alternate mode for the current analysis
     private var usingAlternateMode = false
+    // Flag to track if we're using an alternate platform for the current analysis
+    private var usingAlternatePlatform = false
     
     companion object {
         const val TOPICS_DIR_NAME = "Topics" // Directory for knowledge base
@@ -69,10 +72,12 @@ class ShareReceiverActivity : AppCompatActivity() {
         copyButton = findViewById(R.id.copyButton)
         refreshButton = findViewById(R.id.refreshButton) // Initialize refresh button
         toggleModeButton = findViewById(R.id.toggleModeButton) // Initialize toggle mode button
+        togglePlatformButton = findViewById(R.id.togglePlatformButton) // Initialize toggle platform button
         
         copyButton.visibility = View.GONE // Initially hide copy button
         refreshButton.visibility = View.GONE // Initially hide refresh button
         toggleModeButton.visibility = View.GONE // Initially hide toggle mode button
+        togglePlatformButton.visibility = View.GONE // Initially hide toggle platform button
         
         closeButton.setOnClickListener {
             finish()
@@ -100,6 +105,12 @@ class ShareReceiverActivity : AppCompatActivity() {
         updateToggleModeButtonText()
         toggleModeButton.setOnClickListener {
             toggleAnalysisMode()
+        }
+        
+        // Set toggle platform button text and click listener
+        updateTogglePlatformButtonText()
+        togglePlatformButton.setOnClickListener {
+            toggleAnalysisPlatform()
         }
         
         // Handle the intent
@@ -219,6 +230,7 @@ class ShareReceiverActivity : AppCompatActivity() {
             copyButton.visibility = View.GONE // Hide copy button during processing
             refreshButton.visibility = View.GONE // Hide refresh button during processing
             toggleModeButton.visibility = View.GONE // Hide toggle mode button during processing
+            togglePlatformButton.visibility = View.GONE // Hide toggle platform button during processing
             
             // Set the background color according to the current mode
             setResponseBackgroundForCurrentMode()
@@ -259,6 +271,7 @@ class ShareReceiverActivity : AppCompatActivity() {
                     copyButton.visibility = View.GONE
                     refreshButton.visibility = View.GONE
                     toggleModeButton.visibility = View.GONE // Hide toggle mode button when no topics
+                    togglePlatformButton.visibility = View.GONE // Hide toggle platform button when no topics
                 }
                 return
             }
@@ -281,23 +294,33 @@ class ShareReceiverActivity : AppCompatActivity() {
                 // Extract topic name for UI display
                 val topicPattern = "Topic: ([^\\n]+)".toRegex()
                 val topicMatch = topicPattern.find(relevantContext)
-                val topicName = topicMatch?.groupValues?.get(1) ?: "a relevant topic"                  
-                withContext(Dispatchers.Main) {                    // Format the final output with some context
-                    val formattedResponse = "Response suggestion based on \"$topicName\":\n\n$suggestedResponse"
+                val topicName = topicMatch?.groupValues?.get(1) ?: "a relevant topic"
+                    
+                withContext(Dispatchers.Main) {
+                    // Format the final output with some context
+                    val platform = ModeHelper.getPlatformName(this@ShareReceiverActivity)
+                    val formattedResponse = "$platform response based on \"$topicName\":\n\n$suggestedResponse"
                     statusTextView.text = formattedResponse
                     progressBar.visibility = View.GONE
                     copyButton.visibility = View.VISIBLE // Show copy button
                     refreshButton.visibility = View.VISIBLE // Show refresh button when we have a response
                     toggleModeButton.visibility = View.VISIBLE // Show toggle mode button
-                    setResponseBackgroundForCurrentMode() // Set background color based on mode
-                    
-                    // Save response to post history
+                    togglePlatformButton.visibility = View.VISIBLE // Show toggle platform button
+                    togglePlatformButton.visibility = View.VISIBLE // Show toggle platform button
+                    setResponseBackgroundForCurrentMode() // Set background color based on mode                    // Save response to post history
                     val isDarkMode = ModeHelper.isDarkModeActive(this@ShareReceiverActivity)
+                    val currentPlatform = ModeHelper.getCurrentPlatform(this@ShareReceiverActivity)
+                    
+                    val extraInfo = JSONObject().apply {
+                        put("platform", currentPlatform)
+                    }.toString()
+                    
                     PostHistoryManager.savePost(
                         context = this@ShareReceiverActivity,
                         content = suggestedResponse,
                         isDarkMode = isDarkMode,
-                        source = PostHistoryEntry.SOURCE_SHARE
+                        source = PostHistoryEntry.SOURCE_SHARE,
+                        extraInfo = extraInfo
                     )
                     
                     // Show a toast confirming post was saved to history
@@ -319,6 +342,7 @@ class ShareReceiverActivity : AppCompatActivity() {
                     copyButton.visibility = View.GONE
                     refreshButton.visibility = View.GONE
                     toggleModeButton.visibility = View.VISIBLE // Show toggle mode button even if no opportunity found
+                    togglePlatformButton.visibility = View.VISIBLE // Show toggle platform button even if no opportunity found
                     setResponseBackgroundForCurrentMode() // Set background color based on mode
                 }
             }
@@ -671,27 +695,41 @@ class ShareReceiverActivity : AppCompatActivity() {
         val effectiveApiKey = if (responseApiKey.isNotEmpty()) responseApiKey else apiKey
         
         val jsonPayload = JSONObject().apply {
-            put("model", PrefsUtil.getResponseModel(this@ShareReceiverActivity))
-              put("messages", org.json.JSONArray().apply {
+            put("model", PrefsUtil.getResponseModel(this@ShareReceiverActivity))              
+            put("messages", org.json.JSONArray().apply {
                 put(JSONObject().apply {
                     put("role", "system")
                     put("content", ModeHelper.getResponseGenerationSystemPrompt(this@ShareReceiverActivity))
-                })
+                })                    
                 put(JSONObject().apply {
                     put("role", "user")
-                    put("content", """
+                    // Create a string with proper variable substitution
+                    val platformName = ModeHelper.getPlatformName(this@ShareReceiverActivity)
+                    val userContent = """
                         Original Post Content:
                         ${extractedContent}
                         
                         Relevant Context:
                         ${relevantContext}
                         
-                        Draft a helpful and concise reply to the original post using the provided context.
-                        Keep the response natural, relevant, and under 280 characters if possible.
-                    """.trimIndent())
+                        Platform: $platformName
+                        
+                        Draft a reply to the original post using the provided context.
+                        Follow the platform-specific formatting guidelines in your system instructions.
+                        """.trimIndent()
+                    put("content", userContent)
                 })
             })
-            put("max_tokens", 150) // Adjust as needed for response length
+                
+            // Adjust token count based on platform and mode - LinkedIn + PostDemon needs even more tokens for detailed responses
+            val isLinkedIn = ModeHelper.isLinkedInPlatform(this@ShareReceiverActivity)
+            val isDarkMode = ModeHelper.isDarkModeActive(this@ShareReceiverActivity)
+            val maxTokens = when {
+                isLinkedIn && isDarkMode -> 450  // More tokens for LinkedIn + PostDemon for detailed sarcastic responses
+                isLinkedIn -> 300              // Standard LinkedIn token count
+                else -> 150                    // Standard X/Twitter token count
+            }
+            put("max_tokens", maxTokens)
             put("temperature", 0.7) // Some creativity in responses
         }
         
@@ -739,6 +777,7 @@ class ShareReceiverActivity : AppCompatActivity() {
             copyButton.visibility = View.GONE // Hide copy button on error
             refreshButton.visibility = View.GONE // Hide refresh button on error
             toggleModeButton.visibility = View.GONE // Hide toggle mode button on error
+            togglePlatformButton.visibility = View.GONE // Hide toggle platform button on error
             
             // Mode-specific error toast
             val errorToast = if (ModeHelper.isDarkModeActive(this@ShareReceiverActivity)) {
@@ -819,17 +858,19 @@ class ShareReceiverActivity : AppCompatActivity() {
                         cachedExtractedContent!!, 
                         relevantContext
                     )
-                    
-                    // Extract topic name for display
+                      // Extract topic name for display
                     val topicPattern = "Topic: ([^\\n]+)".toRegex()
                     val topicMatch = topicPattern.find(relevantContext)
                     val topicName = topicMatch?.groupValues?.get(1) ?: "a relevant topic"
                       // Update UI
                     withContext(Dispatchers.Main) {
-                        statusTextView.text = "Response suggestion based on \"$topicName\":\n\n$suggestedResponse"
+                        val platform = ModeHelper.getPlatformName(this@ShareReceiverActivity)
+                        statusTextView.text = "$platform response based on \"$topicName\":\n\n$suggestedResponse"
                         progressBar.visibility = View.GONE
                         copyButton.visibility = View.VISIBLE
                         refreshButton.visibility = View.VISIBLE
+                        toggleModeButton.visibility = View.VISIBLE
+                        togglePlatformButton.visibility = View.VISIBLE
                         
                         // Save refreshed response to post history
                         val isDarkMode = ModeHelper.isDarkModeActive(this@ShareReceiverActivity)
@@ -876,6 +917,22 @@ class ShareReceiverActivity : AppCompatActivity() {
         } else {
             getString(R.string.share_receiver_name)
         }
+        
+        // Reset temporary mode when returning to this activity
+        if (usingAlternateMode) {
+            TemporaryModeManager.clearTemporaryMode()
+            usingAlternateMode = false
+        }
+        
+        // Reset temporary platform when returning to this activity
+        if (usingAlternatePlatform) {
+            PlatformManager.clearTemporaryPlatform()
+            usingAlternatePlatform = false
+        }
+        
+        // Update UI elements
+        updateToggleModeButtonText()
+        updateTogglePlatformButtonText()
     }
     
     /**
@@ -979,6 +1036,7 @@ class ShareReceiverActivity : AppCompatActivity() {
                         copyButton.visibility = View.VISIBLE
                         refreshButton.visibility = View.VISIBLE
                         toggleModeButton.visibility = View.VISIBLE
+                        togglePlatformButton.visibility = View.VISIBLE
                         setResponseBackgroundForCurrentMode()
                         
                         // Save toggled mode response to post history
@@ -1010,6 +1068,7 @@ class ShareReceiverActivity : AppCompatActivity() {
                         copyButton.visibility = View.GONE
                         refreshButton.visibility = View.GONE
                         toggleModeButton.visibility = View.VISIBLE
+                        togglePlatformButton.visibility = View.VISIBLE
                         // Reset to original mode if we can't find an opportunity
                         TemporaryModeManager.clearTemporaryMode()
                         updateToggleModeButtonText()
@@ -1024,6 +1083,153 @@ class ShareReceiverActivity : AppCompatActivity() {
                     TemporaryModeManager.clearTemporaryMode()
                     updateToggleModeButtonText()
                     setResponseBackgroundForCurrentMode()
+                }
+            }
+        }
+    }
+      /**
+     * Updates the toggle platform button text based on the current platform
+     */
+    private fun updateTogglePlatformButtonText() {
+        val currentPlatform = ModeHelper.getCurrentPlatform(this)
+        togglePlatformButton.text = if (currentPlatform == PrefsUtil.PLATFORM_LINKEDIN) {
+            getString(R.string.switch_to_x)
+        } else {
+            getString(R.string.switch_to_linkedin)
+        }
+    }
+    
+    /**
+     * Toggles between LinkedIn and X platforms for the current analysis
+     * without affecting the app's global settings
+     */
+    private fun toggleAnalysisPlatform() {
+        if (cachedExtractedContent.isNullOrBlank() || cachedKnowledgeBase.isNullOrBlank()) {
+            val errorMsg = if (ModeHelper.isDarkModeActive(this)) {
+                "Can't switch platforms without content to analyze. Do better next time."
+            } else {
+                "Unable to switch platforms. No content to analyze."
+            }
+            Toast.makeText(this, errorMsg, Toast.LENGTH_SHORT).show()
+            return
+        }
+        
+        // Toggle to temporary platform
+        val newPlatform = PlatformManager.toggleTemporaryPlatform(this)
+        usingAlternatePlatform = true
+        
+        // Update UI elements for the new platform
+        updateTogglePlatformButtonText()
+        
+        // Show processing UI
+        progressBar.visibility = View.VISIBLE
+        val platformChangeMsg = if (newPlatform == PrefsUtil.PLATFORM_LINKEDIN) {
+            "Switching to LinkedIn format..."
+        } else {
+            "Switching to X format..."
+        }
+        statusTextView.text = platformChangeMsg
+        copyButton.visibility = View.GONE
+        
+        // Get API key
+        val apiKey = SecureKeyStore.getOpenAIApiKey(this)
+        if (apiKey.isEmpty()) {
+            lifecycleScope.launch {
+                showError("API key required for generating responses")
+            }
+            return
+        }
+        
+        // Launch coroutine to generate new response with the alternate platform
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val client = OkHttpClient.Builder()
+                    .followSslRedirects(true)
+                    .followRedirects(true)
+                    .build()
+                
+                // Find an opportunity with the alternate platform
+                val relevantContext = evaluateOpportunity(
+                    client, 
+                    apiKey, 
+                    cachedExtractedContent!!, 
+                    cachedKnowledgeBase!!
+                )
+                
+                if (relevantContext != null) {
+                    withContext(Dispatchers.Main) {
+                        val platform = ModeHelper.getPlatformName(this@ShareReceiverActivity)
+                        val msg = if (ModeHelper.isDarkModeActive(this@ShareReceiverActivity)) {
+                            "Crafting $platform-style sarcasm..."
+                        } else {
+                            "Generating $platform-optimized response..."
+                        }
+                        statusTextView.text = msg
+                    }
+                    
+                    // Generate new response with new platform
+                    val suggestedResponse = generateResponse(
+                        client, 
+                        apiKey, 
+                        cachedExtractedContent!!, 
+                        relevantContext
+                    )
+                    
+                    // Extract topic name for display
+                    val topicPattern = "Topic: ([^\\n]+)".toRegex()
+                    val topicMatch = topicPattern.find(relevantContext)
+                    val topicName = topicMatch?.groupValues?.get(1) ?: "a relevant topic"
+                    
+                    // Update UI
+                    withContext(Dispatchers.Main) {
+                        val platform = ModeHelper.getPlatformName(this@ShareReceiverActivity)
+                        statusTextView.text = "$platform response based on \"$topicName\":\n\n$suggestedResponse"
+                        progressBar.visibility = View.GONE
+                        copyButton.visibility = View.VISIBLE
+                        refreshButton.visibility = View.VISIBLE
+                        toggleModeButton.visibility = View.VISIBLE
+                        togglePlatformButton.visibility = View.VISIBLE
+                          // Save platform-specific response to post history
+                        val isDarkMode = ModeHelper.isDarkModeActive(this@ShareReceiverActivity)
+                        val currentPlatform = ModeHelper.getCurrentPlatform(this@ShareReceiverActivity)
+                        
+                        val extraInfo = JSONObject().apply {
+                            put("platform", currentPlatform)
+                        }.toString()
+                        
+                        PostHistoryManager.savePost(
+                            context = this@ShareReceiverActivity,
+                            content = suggestedResponse,
+                            isDarkMode = isDarkMode,
+                            source = PostHistoryEntry.SOURCE_SHARE,
+                            extraInfo = extraInfo
+                        )
+                        
+                        // Show a toast confirming post was saved to history
+                        Toast.makeText(
+                            this@ShareReceiverActivity, 
+                            "Response saved to history", 
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                } else {
+                    // No new opportunity found
+                    withContext(Dispatchers.Main) {
+                        val noOpportunityMsg = if (ModeHelper.isDarkModeActive(this@ShareReceiverActivity)) {
+                            "Sorry, can't find anything worth commenting on for this platform."
+                        } else {
+                            "No response opportunities found for this platform."
+                        }
+                        statusTextView.text = noOpportunityMsg
+                        progressBar.visibility = View.GONE
+                        copyButton.visibility = View.GONE
+                        refreshButton.visibility = View.GONE
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error switching platforms", e)
+                lifecycleScope.launch {
+                    showError("Error switching platforms: ${e.message}")
                 }
             }
         }

@@ -4,9 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".CreatePostActivity">
-
-    <TextView
+    tools:context=".CreatePostActivity">    <TextView
         android:id="@+id/createPostTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -15,15 +13,54 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginTop="32dp"/>    <TextView
+        android:layout_marginTop="32dp"/>
+        
+    <TextView
+        android:id="@+id/platformLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Platform:"
+        android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@id/createPostTitle"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginTop="16dp"
+        android:layout_marginLeft="32dp"/>
+
+    <RadioGroup
+        android:id="@+id/platformRadioGroup"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/platformLabel"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginTop="8dp"
+        android:layout_marginLeft="32dp"
+        android:layout_marginRight="32dp">
+
+        <RadioButton
+            android:id="@+id/radioX"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="X"
+            android:layout_marginRight="32dp"/>
+
+        <RadioButton
+            android:id="@+id/radioLinkedIn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="LinkedIn" />
+    </RadioGroup>
+        
+    <TextView
         android:id="@+id/topicLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Select Topic:"
         android:textSize="16sp"
-        app:layout_constraintTop_toBottomOf="@id/createPostTitle"
+        app:layout_constraintTop_toBottomOf="@id/platformRadioGroup"
         app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="16dp"
         android:layout_marginLeft="32dp"/>
 
     <Spinner
@@ -73,40 +110,65 @@
         app:layout_constraintTop_toBottomOf="@id/specialInstructionsEditText"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginTop="40dp"/>
-
-    <TextView
-        android:id="@+id/generatedPostTextView"
+        android:layout_marginTop="40dp"/>        <ScrollView
+        android:id="@+id/generatedPostScrollView"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text=""
-        android:textSize="16sp"
-        android:padding="16dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="16dp"
+        android:fillViewport="true"
         app:layout_constraintTop_toBottomOf="@id/generatePostButton"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginTop="24dp"/>
-
-    <Button
-        android:id="@+id/toggleModeButton"
-        android:layout_width="wrap_content"
+        app:layout_constraintBottom_toTopOf="@+id/buttonContainer">
+        
+        <TextView
+            android:id="@+id/generatedPostTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textSize="16sp"
+            android:padding="16dp"/>
+    </ScrollView>
+      <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/buttonContainer"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/analyze_with_demon"
-        app:layout_constraintTop_toBottomOf="@id/generatedPostTextView"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginTop="16dp"
-        android:visibility="gone"/>
+        app:layout_constraintRight_toRightOf="parent">
+          <LinearLayout
+            android:id="@+id/toggleButtonsLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:layout_marginTop="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:visibility="gone">
+
+            <Button
+                android:id="@+id/toggleModeButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/analyze_with_demon"/>
+        </LinearLayout>
 
     <Button
         android:id="@+id/copyPostButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Copy Post"
-        app:layout_constraintTop_toBottomOf="@id/toggleModeButton"
+        app:layout_constraintTop_toBottomOf="@id/toggleButtonsLayout"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
         android:visibility="gone"/>
+    
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
